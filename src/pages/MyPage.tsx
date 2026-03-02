@@ -1,12 +1,24 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import type { FormEvent } from "react";
+import type { ChangeEvent, FormEvent } from "react";
 import { startGoogleLogin } from "../service/authService";
-import { updateMyStatusMessage } from "../service/userService";
+import {
+  getMyProfile,
+  requestMyProfilePicturePresignedUrl,
+  saveMyProfilePictureKey,
+  updateMyStatusMessage,
+  uploadFileToPresignedUrl,
+} from "../service/userService";
 
 function MyPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [resultMessage, setResultMessage] = useState("");
+  const queryClient = useQueryClient();
+
+  const myProfileQuery = useQuery({
+    queryKey: ["myProfile"],
+    queryFn: getMyProfile,
+  });
 
   const handleGoogleLogin = () => {
     startGoogleLogin();
@@ -30,6 +42,33 @@ function MyPage() {
     },
   });
 
+  const uploadProfileImageMutation = useMutation({
+    mutationFn: async (file: File) => {
+      const { presignedUrl, key } = await requestMyProfilePicturePresignedUrl({
+        fileName: file.name,
+        fileType: file.type,
+      });
+
+      await uploadFileToPresignedUrl({ presignedUrl, file });
+      await saveMyProfilePictureKey({ key });
+    },
+    onSuccess: () => {
+      setResultMessage("프로필 이미지가 업로드되었습니다.");
+      queryClient.invalidateQueries({ queryKey: ["myProfile"] });
+    },
+    onError: () => {
+      setResultMessage("프로필 이미지 업로드에 실패했습니다.");
+
+      const shouldLogin = window.confirm(
+        "프로필 이미지 업로드에 실패했습니다. 로그인하시겠습니까?",
+      );
+
+      if (shouldLogin) {
+        handleGoogleLogin();
+      }
+    },
+  });
+
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -40,6 +79,37 @@ function MyPage() {
     }
 
     updateStatusMutation.mutate({ statusMessage: trimmed });
+  };
+
+  const createSafeUploadFileName = (file: File) => {
+    const extension = file.name.includes(".")
+      ? file.name.split(".").pop()?.toLowerCase()
+      : undefined;
+    const fallbackExtension = file.type.split("/")[1]?.toLowerCase();
+    const finalExtension = extension || fallbackExtension || "bin";
+
+    return `profile_${Date.now()}.${finalExtension}`;
+  };
+
+  const handleProfileImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) {
+      return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+      setResultMessage("이미지 파일만 업로드할 수 있습니다.");
+      return;
+    }
+
+    const uploadFile = new File([file], createSafeUploadFileName(file), {
+      type: file.type,
+      lastModified: file.lastModified,
+    });
+
+    uploadProfileImageMutation.mutate(uploadFile);
   };
 
   return (
@@ -53,6 +123,41 @@ function MyPage() {
       }}
     >
       <h1>My 페이지</h1>
+      {myProfileQuery.data?.profileImageUrl ? (
+        <img
+          src={myProfileQuery.data.profileImageUrl}
+          alt="프로필 이미지"
+          style={{
+            width: 120,
+            height: 120,
+            objectFit: "cover",
+            borderRadius: "50%",
+          }}
+        />
+      ) : (
+        <p>프로필 이미지가 없습니다.</p>
+      )}
+      <div>
+        <input
+          id="profile-image-input"
+          type="file"
+          accept="image/*"
+          onChange={handleProfileImageChange}
+          style={{ display: "none" }}
+          disabled={uploadProfileImageMutation.isPending}
+        />
+        <button
+          type="button"
+          onClick={() =>
+            document.getElementById("profile-image-input")?.click()
+          }
+          disabled={uploadProfileImageMutation.isPending}
+        >
+          {uploadProfileImageMutation.isPending
+            ? "업로드 중..."
+            : "프로필 이미지 업로드"}
+        </button>
+      </div>
       <form onSubmit={handleSubmit}>
         <input
           value={statusMessage}
