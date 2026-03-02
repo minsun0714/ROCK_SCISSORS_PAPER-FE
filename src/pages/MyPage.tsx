@@ -4,7 +4,7 @@ import type { FormEvent } from "react";
 import { startGoogleLogin } from "../service/authService";
 import { updateMyStatusMessage } from "../service/userService";
 
-function Ping() {
+function MyPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [resultMessage, setResultMessage] = useState("");
 
@@ -52,7 +52,7 @@ function Ping() {
         minHeight: "100vh",
       }}
     >
-      <h1>Ping 페이지</h1>
+      <h1>My 페이지</h1>
       <form onSubmit={handleSubmit}>
         <input
           value={statusMessage}
@@ -68,4 +68,4 @@ function Ping() {
   );
 }
 
-export default Ping;
+export default MyPage;

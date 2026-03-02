@@ -1,11 +1,9 @@
-import './Home.css';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
-const GOOGLE_LOGIN_URL = `${API_BASE_URL}/oauth2/authorization/google?app_redirect_uri=/ping`;
+import "./Home.css";
+import { startGoogleLogin } from "../service/authService";
 
 function Home() {
   const handleGoogleLogin = () => {
-    window.location.href = GOOGLE_LOGIN_URL;
+    startGoogleLogin();
   };
 
   return (
