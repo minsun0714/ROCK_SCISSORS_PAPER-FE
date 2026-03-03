@@ -1,6 +1,4 @@
-import axios from "axios";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+import { apiClient } from "@/service/apiClient";
 
 type UpdateStatusMessageParams = {
   statusMessage: string;
@@ -27,24 +25,12 @@ export type MyProfileResponse = {
   profileImageUrl?: string | null;
 };
 
-const getAuthorizationHeader = () => {
-  const storedToken = localStorage.getItem("accessToken");
-  const authorization = storedToken
-    ? storedToken.startsWith("Bearer ")
-      ? storedToken
-      : `Bearer ${storedToken}`
-    : undefined;
-
-  return authorization ? { Authorization: authorization } : undefined;
-};
-
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
-  const response = await axios.patch(
-    `${API_BASE_URL}/users/me/status-message`,
+  const response = await apiClient.patch(
+    "/users/me/status-message",
     { statusMessage },
     {
-      withCredentials: true,
-      headers: getAuthorizationHeader(),
+      authRequired: true,
     },
   );
 
@@ -55,12 +41,11 @@ export const requestMyProfilePicturePresignedUrl = async ({
   fileName,
   fileType,
 }: PresignedUrlRequestParams) => {
-  const response = await axios.post<ProfilePicturePresignedResponse>(
-    `${API_BASE_URL}/users/me/profile-picture`,
+  const response = await apiClient.post<ProfilePicturePresignedResponse>(
+    "/users/me/profile-picture",
     { fileName, fileType },
     {
-      withCredentials: true,
-      headers: getAuthorizationHeader(),
+      authRequired: true,
     },
   );
 
@@ -96,12 +81,11 @@ export const uploadFileToPresignedUrl = async ({
 };
 
 export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyParams) => {
-  const response = await axios.patch(
-    `${API_BASE_URL}/users/me/profile-picture`,
+  const response = await apiClient.patch(
+    "/users/me/profile-picture",
     { key },
     {
-      withCredentials: true,
-      headers: getAuthorizationHeader(),
+      authRequired: true,
     },
   );
 
@@ -109,9 +93,8 @@ export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyPara
 };
 
 export const getMyProfile = async () => {
-  const response = await axios.get<MyProfileResponse>(`${API_BASE_URL}/users/me`, {
-    withCredentials: true,
-    headers: getAuthorizationHeader(),
+  const response = await apiClient.get<MyProfileResponse>("/users/me", {
+    authRequired: true,
   });
 
   return response.data;
