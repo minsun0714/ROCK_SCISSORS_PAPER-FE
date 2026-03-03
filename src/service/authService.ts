@@ -10,11 +10,12 @@ type ExchangeBody = {
 };
 
 export const exchangeAuthCode = async (code: string) => {
-  const response = await apiClient.get<ExchangeBody>("/auth/exchange", {
+  const {
+    headers: { authorization },
+  } = await apiClient.get<ExchangeBody>("/auth/exchange", {
     params: { code },
   });
-
-  const accessToken = response.headers.authorization as string | undefined;
+  const accessToken = authorization as string | undefined;
 
   return {
     accessToken,
@@ -38,7 +39,10 @@ export const processAuthCallback = async (code: string) => {
 };
 
 export const startGoogleLogin = () => {
-  const currentPath = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  const {
+    location: { pathname, search, hash },
+  } = window;
+  const currentPath = `${pathname}${search}${hash}`;
   sessionStorage.setItem(POST_LOGIN_REDIRECT_KEY, currentPath);
   window.location.href = GOOGLE_LOGIN_URL;
 };

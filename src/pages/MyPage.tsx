@@ -1,52 +1,32 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import ProfileImageSection from "@/features/user/components/ProfileImageSection";
+import StatusMessageSection from "@/features/user/components/StatusMessageSection";
 import {
-  getMyProfile,
-  requestMyProfilePicturePresignedUrl,
-  saveMyProfilePictureKey,
-  updateMyStatusMessage,
-  uploadFileToPresignedUrl,
-} from "@/service/userService";
+  useMyProfileQuery,
+  useUpdateMyStatusMessageMutation,
+  useUploadProfileImageMutation,
+} from "@/features/user/hooks";
 
 function MyPage() {
   const [statusMessage, setStatusMessage] = useState("");
   const [resultMessage, setResultMessage] = useState("");
-  const queryClient = useQueryClient();
 
-  const myProfileQuery = useQuery({
-    queryKey: ["myProfile"],
-    queryFn: getMyProfile,
-  });
+  const { data: myProfile } = useMyProfileQuery();
 
-  const updateStatusMutation = useMutation({
-    mutationFn: updateMyStatusMessage,
-    onSuccess: () => {
-      setResultMessage("상태 메시지가 변경되었습니다.");
-    },
-    onError: () => {
-      setResultMessage("상태 메시지 변경에 실패했습니다.");
-    },
-  });
+  const {
+    mutate: updateStatus,
+    isPending: isUpdateStatusPending,
+    resultMessage: updateStatusResultMessage,
+    setResultMessage: setUpdateStatusResultMessage,
+  } = useUpdateMyStatusMessageMutation();
 
-  const uploadProfileImageMutation = useMutation({
-    mutationFn: async (file: File) => {
-      const { presignedUrl, key } = await requestMyProfilePicturePresignedUrl({
-        fileName: file.name,
-        fileType: file.type,
-      });
-
-      await uploadFileToPresignedUrl({ presignedUrl, file });
-      await saveMyProfilePictureKey({ key });
-    },
-    onSuccess: () => {
-      setResultMessage("프로필 이미지가 업로드되었습니다.");
-      queryClient.invalidateQueries({ queryKey: ["myProfile"] });
-    },
-    onError: () => {
-      setResultMessage("프로필 이미지 업로드에 실패했습니다.");
-    },
-  });
+  const {
+    mutate: uploadProfileImage,
+    isPending: isUploadProfileImagePending,
+    resultMessage: uploadProfileImageResultMessage,
+    setResultMessage: setUploadProfileImageResultMessage,
+  } = useUploadProfileImageMutation();
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -57,22 +37,25 @@ function MyPage() {
       return;
     }
 
-    updateStatusMutation.mutate({ statusMessage: trimmed });
+    setResultMessage("");
+    setUpdateStatusResultMessage("");
+    updateStatus({ statusMessage: trimmed });
   };
 
   const createSafeUploadFileName = (file: File) => {
-    const extension = file.name.includes(".")
-      ? file.name.split(".").pop()?.toLowerCase()
-      : undefined;
-    const fallbackExtension = file.type.split("/")[1]?.toLowerCase();
+    const { name, type } = file;
+    const extension = name.includes(".") ? name.split(".").pop()?.toLowerCase() : undefined;
+    const fallbackExtension = type.split("/")[1]?.toLowerCase();
     const finalExtension = extension || fallbackExtension || "bin";
 
     return `profile_${Date.now()}.${finalExtension}`;
   };
 
   const handleProfileImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    event.target.value = "";
+    const { target } = event;
+    const { files } = target;
+    const file = files?.[0];
+    target.value = "";
 
     if (!file) {
       return;
@@ -83,67 +66,47 @@ function MyPage() {
       return;
     }
 
+    const { type, lastModified } = file;
+
     const uploadFile = new File([file], createSafeUploadFileName(file), {
-      type: file.type,
-      lastModified: file.lastModified,
+      type,
+      lastModified,
     });
 
-    uploadProfileImageMutation.mutate(uploadFile);
+    setResultMessage("");
+    setUploadProfileImageResultMessage("");
+    uploadProfileImage(uploadFile);
+  };
+
+  const displayMessage =
+    resultMessage || uploadProfileImageResultMessage || updateStatusResultMessage;
+  const profileImageUrl = myProfile?.profileImageUrl;
+  const handleStatusMessageChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
+    setStatusMessage(value);
   };
 
   return (
-    <main
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
-      }}
-    >
-      <h1>My 페이지</h1>
-      {myProfileQuery.data?.profileImageUrl ? (
-        <img
-          src={myProfileQuery.data.profileImageUrl}
-          alt="프로필 이미지"
-          style={{
-            width: 120,
-            height: 120,
-            objectFit: "cover",
-            borderRadius: "50%",
-          }}
-        />
-      ) : (
-        <p>프로필 이미지가 없습니다.</p>
+    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
+      <h1 className="text-3xl font-bold text-slate-900">My 페이지</h1>
+
+      <ProfileImageSection
+        profileImageUrl={profileImageUrl}
+        isPending={isUploadProfileImagePending}
+        onFileChange={handleProfileImageChange}
+      />
+
+      <StatusMessageSection
+        statusMessage={statusMessage}
+        isPending={isUpdateStatusPending}
+        onStatusMessageChange={handleStatusMessageChange}
+        onSubmit={handleSubmit}
+      />
+
+      {displayMessage && (
+        <p className="w-full max-w-xl rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">
+          {displayMessage}
+        </p>
       )}
-      <div>
-        <input
-          id="profile-image-input"
-          type="file"
-          accept="image/*"
-          onChange={handleProfileImageChange}
-          style={{ display: "none" }}
-          disabled={uploadProfileImageMutation.isPending}
-        />
-        <button
-          type="button"
-          onClick={() => document.getElementById("profile-image-input")?.click()}
-          disabled={uploadProfileImageMutation.isPending}
-        >
-          {uploadProfileImageMutation.isPending ? "업로드 중..." : "프로필 이미지 업로드"}
-        </button>
-      </div>
-      <form onSubmit={handleSubmit}>
-        <input
-          value={statusMessage}
-          onChange={(event) => setStatusMessage(event.target.value)}
-          placeholder="상태 메시지를 입력하세요"
-        />
-        <button type="submit" disabled={updateStatusMutation.isPending}>
-          {updateStatusMutation.isPending ? "저장 중..." : "상태 메시지 저장"}
-        </button>
-      </form>
-      {resultMessage && <p>{resultMessage}</p>}
     </main>
   );
 }

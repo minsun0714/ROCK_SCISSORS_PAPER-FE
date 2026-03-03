@@ -61,30 +61,32 @@ const readCookie = (name: string) => {
 };
 
 const extractAccessToken = (data?: TokenResponse, authorizationHeader?: string) => {
+  const { accessToken, access_token: accessTokenLegacy, token } = data ?? {};
   const headerToken = authorizationHeader;
-  const bodyToken = data?.accessToken ?? data?.access_token ?? data?.token;
+  const bodyToken = accessToken ?? accessTokenLegacy ?? token;
 
   return headerToken ?? bodyToken ?? null;
 };
 
 const extractCsrfToken = (data?: TokenResponse, csrfHeader?: string) => {
-  return (
-    csrfHeader ?? data?.csrfToken ?? data?.csrf_token ?? data?.token ?? readCookie("XSRF-TOKEN")
-  );
+  const { csrfToken, csrf_token: csrfTokenLegacy, token } = data ?? {};
+
+  return csrfHeader ?? csrfToken ?? csrfTokenLegacy ?? token ?? readCookie("XSRF-TOKEN");
 };
 
 const fetchCsrfToken = async () => {
-  const response = await axios.get<TokenResponse>(`${API_BASE_URL}/csrf`, {
+  const { data, headers } = await axios.get<TokenResponse>(`${API_BASE_URL}/csrf`, {
     withCredentials: true,
   });
+  const csrfHeader = headers["x-csrf-token"] as string | undefined;
 
-  return extractCsrfToken(response.data, response.headers["x-csrf-token"] as string | undefined);
+  return extractCsrfToken(data, csrfHeader);
 };
 
 const refreshAccessToken = async () => {
   const csrfToken = await fetchCsrfToken();
 
-  const response = await axios.post<TokenResponse>(
+  const { data, headers } = await axios.post<TokenResponse>(
     `${API_BASE_URL}/auth/refresh`,
     {},
     {
@@ -98,10 +100,8 @@ const refreshAccessToken = async () => {
     },
   );
 
-  const token = extractAccessToken(
-    response.data,
-    response.headers.authorization as string | undefined,
-  );
+  const authorization = headers.authorization as string | undefined;
+  const token = extractAccessToken(data, authorization);
 
   saveAccessToken(token);
 
@@ -112,10 +112,11 @@ let isRefreshing = false;
 let refreshPromise: Promise<string | null> | null = null;
 
 apiClient.interceptors.request.use((config) => {
-  const token = config.authRequired ? toBearerToken(getAccessToken()) : null;
+  const { authRequired, headers } = config;
+  const token = authRequired ? toBearerToken(getAccessToken()) : null;
 
-  if (token && !config.headers.Authorization) {
-    config.headers.Authorization = token;
+  if (token && !headers.Authorization) {
+    headers.Authorization = token;
   }
 
   return config;
@@ -124,8 +125,9 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const status = error.response?.status;
-    const originalRequest = error.config as InternalAxiosRequestConfig | undefined;
+    const { response, config } = error;
+    const status = response?.status;
+    const originalRequest = config as InternalAxiosRequestConfig | undefined;
 
     if (!originalRequest || status !== 401 || !originalRequest.authRequired) {
       return Promise.reject(error);

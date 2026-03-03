@@ -26,7 +26,7 @@ export type MyProfileResponse = {
 };
 
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
-  const response = await apiClient.patch(
+  const { data } = await apiClient.patch(
     "/users/me/status-message",
     { statusMessage },
     {
@@ -34,14 +34,14 @@ export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessa
     },
   );
 
-  return response.data;
+  return data;
 };
 
 export const requestMyProfilePicturePresignedUrl = async ({
   fileName,
   fileType,
 }: PresignedUrlRequestParams) => {
-  const response = await apiClient.post<ProfilePicturePresignedResponse>(
+  const { data } = await apiClient.post<ProfilePicturePresignedResponse>(
     "/users/me/profile-picture",
     { fileName, fileType },
     {
@@ -49,14 +49,15 @@ export const requestMyProfilePicturePresignedUrl = async ({
     },
   );
 
-  const presignedUrl = response.data.presignedUrl ?? response.data.uploadUrl ?? response.data.url;
-  const key = response.data.key ?? response.data.fileKey;
+  const { presignedUrl, uploadUrl, url, key, fileKey } = data;
+  const resolvedPresignedUrl = presignedUrl ?? uploadUrl ?? url;
+  const resolvedKey = key ?? fileKey;
 
-  if (!presignedUrl || !key) {
+  if (!resolvedPresignedUrl || !resolvedKey) {
     throw new Error("프리사인드 URL 응답 형식이 올바르지 않습니다.");
   }
 
-  return { presignedUrl, key };
+  return { presignedUrl: resolvedPresignedUrl, key: resolvedKey };
 };
 
 export const uploadFileToPresignedUrl = async ({
@@ -73,15 +74,16 @@ export const uploadFileToPresignedUrl = async ({
     },
     body: file,
   });
+  const { ok, status } = response;
 
-  if (!response.ok) {
+  if (!ok) {
     const errorBody = await response.text();
-    throw new Error(`S3 업로드 실패: ${response.status} ${errorBody}`);
+    throw new Error(`S3 업로드 실패: ${status} ${errorBody}`);
   }
 };
 
 export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyParams) => {
-  const response = await apiClient.patch(
+  const { data } = await apiClient.patch(
     "/users/me/profile-picture",
     { key },
     {
@@ -89,13 +91,13 @@ export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyPara
     },
   );
 
-  return response.data;
+  return data;
 };
 
 export const getMyProfile = async () => {
-  const response = await apiClient.get<MyProfileResponse>("/users/me", {
+  const { data } = await apiClient.get<MyProfileResponse>("/users/me", {
     authRequired: true,
   });
 
-  return response.data;
+  return data;
 };

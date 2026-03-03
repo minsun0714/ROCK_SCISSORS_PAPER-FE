@@ -1,25 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { consumePostLoginRedirectPath, processAuthCallback } from "@/service/authService";
+import { useLocation } from "react-router-dom";
+import { useProcessAuthCallbackMutation } from "@/features/auth/hooks";
 
 function Callback() {
-  const navigate = useNavigate();
   const processedCodeRef = useRef<string | null>(null);
-  const location = useLocation();
-  const code = new URLSearchParams(location.search).get("code");
+  const { search } = useLocation();
+  const code = new URLSearchParams(search).get("code");
 
-  const { mutate } = useMutation({
-    mutationFn: processAuthCallback,
-    onSuccess: ({ accessToken }) => {
-      if (!accessToken) {
-        return;
-      }
-
-      const redirectPath = consumePostLoginRedirectPath();
-      navigate(redirectPath, { replace: true });
-    },
-  });
+  const { mutate } = useProcessAuthCallbackMutation();
 
   useEffect(() => {
     if (!code || processedCodeRef.current === code) {
@@ -31,8 +19,8 @@ function Callback() {
   }, [code, mutate]);
 
   return (
-    <main className="home">
-      <h1>{code}</h1>
+    <main className="flex min-h-[calc(100vh-72px)] items-center justify-center px-4">
+      <h1 className="text-xl font-semibold text-slate-700">{code}</h1>
     </main>
   );
 }
