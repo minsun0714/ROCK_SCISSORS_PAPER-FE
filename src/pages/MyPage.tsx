@@ -1,7 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { startGoogleLogin } from "@/service/authService";
 import {
   getMyProfile,
   requestMyProfilePicturePresignedUrl,
@@ -20,10 +19,6 @@ function MyPage() {
     queryFn: getMyProfile,
   });
 
-  const handleGoogleLogin = () => {
-    startGoogleLogin();
-  };
-
   const updateStatusMutation = useMutation({
     mutationFn: updateMyStatusMessage,
     onSuccess: () => {
@@ -31,12 +26,6 @@ function MyPage() {
     },
     onError: () => {
       setResultMessage("상태 메시지 변경에 실패했습니다.");
-
-      const shouldLogin = window.confirm("상태 메시지 변경에 실패했습니다. 로그인하시겠습니까?");
-
-      if (shouldLogin) {
-        handleGoogleLogin();
-      }
     },
   });
 
@@ -56,14 +45,6 @@ function MyPage() {
     },
     onError: () => {
       setResultMessage("프로필 이미지 업로드에 실패했습니다.");
-
-      const shouldLogin = window.confirm(
-        "프로필 이미지 업로드에 실패했습니다. 로그인하시겠습니까?",
-      );
-
-      if (shouldLogin) {
-        handleGoogleLogin();
-      }
     },
   });
 
