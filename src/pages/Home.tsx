@@ -1,5 +1,5 @@
+import { startGoogleLogin } from "@/service/authService";
 import "./Home.css";
-import { startGoogleLogin } from "../service/authService";
 
 function Home() {
   const handleGoogleLogin = () => {

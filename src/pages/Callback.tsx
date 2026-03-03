@@ -1,10 +1,7 @@
-import { useMutation } from "@tanstack/react-query";
 import { useEffect, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-  consumePostLoginRedirectPath,
-  processAuthCallback,
-} from "../service/authService";
+import { useMutation } from "@tanstack/react-query";
+import { consumePostLoginRedirectPath, processAuthCallback } from "@/service/authService";
 
 function Callback() {
   const navigate = useNavigate();

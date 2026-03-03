@@ -1,14 +1,14 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { startGoogleLogin } from "../service/authService";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { startGoogleLogin } from "@/service/authService";
 import {
   getMyProfile,
   requestMyProfilePicturePresignedUrl,
   saveMyProfilePictureKey,
   updateMyStatusMessage,
   uploadFileToPresignedUrl,
-} from "../service/userService";
+} from "@/service/userService";
 
 function MyPage() {
   const [statusMessage, setStatusMessage] = useState("");
@@ -32,9 +32,7 @@ function MyPage() {
     onError: () => {
       setResultMessage("상태 메시지 변경에 실패했습니다.");
 
-      const shouldLogin = window.confirm(
-        "상태 메시지 변경에 실패했습니다. 로그인하시겠습니까?",
-      );
+      const shouldLogin = window.confirm("상태 메시지 변경에 실패했습니다. 로그인하시겠습니까?");
 
       if (shouldLogin) {
         handleGoogleLogin();
@@ -148,14 +146,10 @@ function MyPage() {
         />
         <button
           type="button"
-          onClick={() =>
-            document.getElementById("profile-image-input")?.click()
-          }
+          onClick={() => document.getElementById("profile-image-input")?.click()}
           disabled={uploadProfileImageMutation.isPending}
         >
-          {uploadProfileImageMutation.isPending
-            ? "업로드 중..."
-            : "프로필 이미지 업로드"}
+          {uploadProfileImageMutation.isPending ? "업로드 중..." : "프로필 이미지 업로드"}
         </button>
       </div>
       <form onSubmit={handleSubmit}>

@@ -1,8 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { startGoogleLogin } from "../service/authService";
-import { updateMyStatusMessage } from "../service/userService";
+import { useMutation } from "@tanstack/react-query";
+import { startGoogleLogin } from "@/service/authService";
+import { updateMyStatusMessage } from "@/service/userService";
 
 function Ping() {
   const [statusMessage, setStatusMessage] = useState("");
@@ -20,9 +20,7 @@ function Ping() {
     onError: () => {
       setResultMessage("상태 메시지 변경에 실패했습니다.");
 
-      const shouldLogin = window.confirm(
-        "상태 메시지 변경에 실패했습니다. 로그인하시겠습니까?",
-      );
+      const shouldLogin = window.confirm("상태 메시지 변경에 실패했습니다. 로그인하시겠습니까?");
 
       if (shouldLogin) {
         handleGoogleLogin();
