@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 
 type UpdateStatusMessageParams = {
   statusMessage: string;
@@ -39,9 +38,7 @@ const getAuthorizationHeader = () => {
   return authorization ? { Authorization: authorization } : undefined;
 };
 
-export const updateMyStatusMessage = async ({
-  statusMessage,
-}: UpdateStatusMessageParams) => {
+export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
   const response = await axios.patch(
     `${API_BASE_URL}/users/me/status-message`,
     { statusMessage },
@@ -67,8 +64,7 @@ export const requestMyProfilePicturePresignedUrl = async ({
     },
   );
 
-  const presignedUrl =
-    response.data.presignedUrl ?? response.data.uploadUrl ?? response.data.url;
+  const presignedUrl = response.data.presignedUrl ?? response.data.uploadUrl ?? response.data.url;
   const key = response.data.key ?? response.data.fileKey;
 
   if (!presignedUrl || !key) {
@@ -99,9 +95,7 @@ export const uploadFileToPresignedUrl = async ({
   }
 };
 
-export const saveMyProfilePictureKey = async ({
-  key,
-}: SaveProfilePictureKeyParams) => {
+export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyParams) => {
   const response = await axios.patch(
     `${API_BASE_URL}/users/me/profile-picture`,
     { key },
@@ -115,13 +109,10 @@ export const saveMyProfilePictureKey = async ({
 };
 
 export const getMyProfile = async () => {
-  const response = await axios.get<MyProfileResponse>(
-    `${API_BASE_URL}/users/me`,
-    {
-      withCredentials: true,
-      headers: getAuthorizationHeader(),
-    },
-  );
+  const response = await axios.get<MyProfileResponse>(`${API_BASE_URL}/users/me`, {
+    withCredentials: true,
+    headers: getAuthorizationHeader(),
+  });
 
   return response.data;
 };

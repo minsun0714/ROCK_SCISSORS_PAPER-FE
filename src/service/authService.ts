@@ -1,7 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080";
 const GOOGLE_LOGIN_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 const POST_LOGIN_REDIRECT_KEY = "postLoginRedirectPath";
 
@@ -12,13 +11,10 @@ type ExchangeBody = {
 };
 
 export const exchangeAuthCode = async (code: string) => {
-  const response = await axios.get<ExchangeBody>(
-    `${API_BASE_URL}/auth/exchange`,
-    {
-      params: { code },
-      withCredentials: true,
-    },
-  );
+  const response = await axios.get<ExchangeBody>(`${API_BASE_URL}/auth/exchange`, {
+    params: { code },
+    withCredentials: true,
+  });
 
   const accessToken = response.headers.authorization as string | undefined;
 
