@@ -140,7 +140,8 @@ apiClient.interceptors.response.use(
       }
 
       await refreshPromise;
-      return Promise.reject(error);
+      originalRequest.headers.Authorization = toBearerToken(getAccessToken());
+      return apiClient(originalRequest);
     } catch (refreshError) {
       localStorage.removeItem("accessToken");
       return Promise.reject(refreshError);
