@@ -42,6 +42,7 @@ export type UserProfileResponse = {
 export type MyProfileResponse = {
   userId?: number | null;
   profileImageUrl?: string | null;
+  statusMessage?: string | null;
 };
 
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
