@@ -1,42 +1,27 @@
-import type { ChangeEvent, FormEvent } from "react";
+import { Pencil } from "lucide-react";
 
 type StatusMessageSectionProps = {
   statusMessage: string;
-  isPending?: boolean;
-  onStatusMessageChange?: (event: ChangeEvent<HTMLInputElement>) => void;
-  onSubmit?: (event: FormEvent<HTMLFormElement>) => void;
+  onEditClick?: () => void;
 };
 
-function StatusMessageSection({
-  statusMessage,
-  isPending = false,
-  onStatusMessageChange,
-  onSubmit,
-}: StatusMessageSectionProps) {
-  const editable = !!(onStatusMessageChange && onSubmit);
-
+function StatusMessageSection({ statusMessage, onEditClick }: StatusMessageSectionProps) {
   return (
     <section className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="mb-3 text-lg font-semibold text-slate-800">상태 메시지</h2>
-      {editable ? (
-        <form className="flex flex-col gap-3 sm:flex-row" onSubmit={onSubmit}>
-          <input
-            value={statusMessage}
-            onChange={onStatusMessageChange}
-            placeholder="상태 메시지를 입력하세요"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none focus:border-indigo-500"
-          />
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold text-slate-800">상태 메시지</h2>
+        {onEditClick && (
           <button
-            type="submit"
-            disabled={isPending}
-            className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-indigo-300"
+            type="button"
+            onClick={onEditClick}
+            className="text-slate-400 hover:text-slate-600"
+            aria-label="상태 메시지 편집"
           >
-            {isPending ? "저장 중..." : "상태 메시지 저장"}
+            <Pencil className="h-4 w-4" />
           </button>
-        </form>
-      ) : (
-        <p className="text-sm text-slate-600">{statusMessage || "상태 메시지가 없습니다."}</p>
-      )}
+        )}
+      </div>
+      <p className="mt-2 text-sm text-slate-600">{statusMessage || "상태 메시지가 없습니다."}</p>
     </section>
   );
 }

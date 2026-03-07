@@ -55,11 +55,13 @@ export const useMyProfileQuery = () => {
 };
 
 export const useUpdateMyStatusMessageMutation = () => {
+  const queryClient = useQueryClient();
   const [resultMessage, setResultMessage] = useState("");
 
   const { mutate, isPending, isError, error, reset } = useMutation({
     mutationFn: updateMyStatusMessage,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: MY_PROFILE_QUERY_KEY });
       setResultMessage("상태 메시지가 변경되었습니다.");
     },
     onError: () => {

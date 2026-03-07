@@ -1,25 +1,18 @@
 import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent } from "react";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
+import StatusMessageEditModal from "@/features/user/components/StatusMessageEditModal";
 import StatusMessageSection from "@/features/user/components/StatusMessageSection";
 import {
   useMyProfileQuery,
-  useUpdateMyStatusMessageMutation,
   useUploadProfileImageMutation,
 } from "@/features/user/hooks";
 
 function MyPage() {
-  const [statusMessage, setStatusMessage] = useState("");
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
 
   const { data: myProfile } = useMyProfileQuery();
-
-  const {
-    mutate: updateStatus,
-    isPending: isUpdateStatusPending,
-    resultMessage: updateStatusResultMessage,
-    setResultMessage: setUpdateStatusResultMessage,
-  } = useUpdateMyStatusMessageMutation();
 
   const {
     mutate: uploadProfileImage,
@@ -27,20 +20,6 @@ function MyPage() {
     resultMessage: uploadProfileImageResultMessage,
     setResultMessage: setUploadProfileImageResultMessage,
   } = useUploadProfileImageMutation();
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const trimmed = statusMessage.trim();
-    if (!trimmed) {
-      setResultMessage("상태 메시지를 입력해주세요.");
-      return;
-    }
-
-    setResultMessage("");
-    setUpdateStatusResultMessage("");
-    updateStatus({ statusMessage: trimmed });
-  };
 
   const createSafeUploadFileName = (file: File) => {
     const { name, type } = file;
@@ -78,12 +57,8 @@ function MyPage() {
     uploadProfileImage(uploadFile);
   };
 
-  const displayMessage =
-    resultMessage || uploadProfileImageResultMessage || updateStatusResultMessage;
-  const { userId, profileImageUrl } = myProfile ?? {};
-  const handleStatusMessageChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
-    setStatusMessage(value);
-  };
+  const displayMessage = resultMessage || uploadProfileImageResultMessage;
+  const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
@@ -97,16 +72,21 @@ function MyPage() {
       />
 
       <StatusMessageSection
-        statusMessage={statusMessage}
-        isPending={isUpdateStatusPending}
-        onStatusMessageChange={handleStatusMessageChange}
-        onSubmit={handleSubmit}
+        statusMessage={statusMessage ?? ""}
+        onEditClick={() => setIsEditModalOpen(true)}
       />
 
       {displayMessage && (
         <p className="w-full max-w-xl rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">
           {displayMessage}
         </p>
+      )}
+
+      {isEditModalOpen && (
+        <StatusMessageEditModal
+          currentMessage={statusMessage ?? ""}
+          onClose={() => setIsEditModalOpen(false)}
+        />
       )}
     </main>
   );
