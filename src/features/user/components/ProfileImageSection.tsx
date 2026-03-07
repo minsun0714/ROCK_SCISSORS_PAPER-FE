@@ -1,13 +1,27 @@
 import type { ChangeEvent } from "react";
+import type { PresenceStatus } from "@/service/userService";
+
+const getPresenceColor = (status: string) => {
+  switch (status) {
+    case "ONLINE":
+      return "bg-green-500";
+    case "IN_BATTLE":
+      return "bg-amber-700";
+    default:
+      return "bg-gray-400";
+  }
+};
 
 type ProfileImageSectionProps = {
   profileImageUrl?: string | null;
+  presenceStatus?: PresenceStatus | null;
   isPending?: boolean;
   onFileChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 function ProfileImageSection({
   profileImageUrl,
+  presenceStatus,
   isPending = false,
   onFileChange,
 }: ProfileImageSectionProps) {
@@ -17,17 +31,24 @@ function ProfileImageSection({
     <section className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
       <h2 className="mb-3 text-lg font-semibold text-slate-800">프로필 이미지</h2>
       <div className={`${editable ? "mb-4" : ""} flex justify-center`}>
-        {profileImageUrl ? (
-          <img
-            src={profileImageUrl}
-            alt="프로필 이미지"
-            className="h-28 w-28 rounded-full object-cover ring-2 ring-slate-200"
-          />
-        ) : (
-          <div className="flex h-28 w-28 items-center justify-center rounded-full bg-slate-100 text-xs text-slate-500">
-            이미지 없음
-          </div>
-        )}
+        <div className="relative" style={{ width: 256, height: 256 }}>
+          {profileImageUrl ? (
+            <img
+              src={profileImageUrl}
+              alt="프로필 이미지"
+              className="h-full w-full rounded-full object-cover ring-2 ring-slate-200"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-100 text-xs text-slate-500">
+              이미지 없음
+            </div>
+          )}
+          {presenceStatus && (
+            <span
+              className={`absolute bottom-[12px] right-[12px] h-[24px] w-[24px] rounded-full border-[3px] border-white ${getPresenceColor(presenceStatus)}`}
+            />
+          )}
+        </div>
       </div>
 
       {editable && (

@@ -80,7 +80,7 @@ function MyPage() {
 
   const displayMessage =
     resultMessage || uploadProfileImageResultMessage || updateStatusResultMessage;
-  const profileImageUrl = myProfile?.profileImageUrl;
+  const { profileImageUrl, presenceStatus } = myProfile ?? {};
   const handleStatusMessageChange = ({ target: { value } }: ChangeEvent<HTMLInputElement>) => {
     setStatusMessage(value);
   };
@@ -91,6 +91,7 @@ function MyPage() {
 
       <ProfileImageSection
         profileImageUrl={profileImageUrl}
+        presenceStatus={presenceStatus}
         isPending={isUploadProfileImagePending}
         onFileChange={handleProfileImageChange}
       />

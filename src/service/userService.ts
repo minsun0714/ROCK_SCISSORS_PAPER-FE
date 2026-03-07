@@ -21,14 +21,18 @@ type SaveProfilePictureKeyParams = {
   key: string;
 };
 
+export type PresenceStatus = "ONLINE" | "OFFLINE" | "IN_BATTLE";
+
 export type UserProfileResponse = {
   nickname?: string | null;
   profileImageUrl?: string | null;
   statusMessage?: string | null;
+  presenceStatus?: PresenceStatus | null;
 };
 
 export type MyProfileResponse = {
   profileImageUrl?: string | null;
+  presenceStatus?: PresenceStatus | null;
 };
 
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
