@@ -1,3 +1,4 @@
+import axios from "axios";
 import { apiClient } from "@/service/apiClient";
 
 type UpdateStatusMessageParams = {
@@ -77,19 +78,11 @@ export const uploadFileToPresignedUrl = async ({
   presignedUrl: string;
   file: File;
 }) => {
-  const response = await fetch(presignedUrl, {
-    method: "PUT",
+  await axios.put(presignedUrl, file, {
     headers: {
       "Content-Type": file.type,
     },
-    body: file,
   });
-  const { ok, status } = response;
-
-  if (!ok) {
-    const errorBody = await response.text();
-    throw new Error(`S3 업로드 실패: ${status} ${errorBody}`);
-  }
 };
 
 export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyParams) => {
