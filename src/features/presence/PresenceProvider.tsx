@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getBulkPresence } from "@/service/userService";
 import type { PresenceStatus } from "@/service/userService";
 
-const PRESENCE_POLLING_INTERVAL_MS = 5_000;
+const PRESENCE_POLLING_INTERVAL_MS = 30_000;
 
 type PresenceContextValue = {
   register: (userId: number, element: Element) => void;
