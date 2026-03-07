@@ -4,6 +4,7 @@ import Callback from "@/pages/Callback";
 import Home from "@/pages/Home";
 import MyPage from "@/pages/MyPage";
 import Ping from "@/pages/Ping";
+import UserPage from "@/pages/UserPage";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: "my",
         element: <MyPage />,
+      },
+      {
+        path: "users/:userId",
+        element: <UserPage />,
       },
       {
         path: "oauth/callback",

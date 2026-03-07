@@ -21,6 +21,12 @@ type SaveProfilePictureKeyParams = {
   key: string;
 };
 
+export type UserProfileResponse = {
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  statusMessage?: string | null;
+};
+
 export type MyProfileResponse = {
   profileImageUrl?: string | null;
 };
@@ -96,6 +102,14 @@ export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyPara
 
 export const sendHeartbeat = async () => {
   const { data } = await apiClient.post("/users/me/presence/heartbeat", null, {
+    authRequired: true,
+  });
+
+  return data;
+};
+
+export const getUserProfile = async (userId: string) => {
+  const { data } = await apiClient.get<UserProfileResponse>(`/users/${userId}`, {
     authRequired: true,
   });
 

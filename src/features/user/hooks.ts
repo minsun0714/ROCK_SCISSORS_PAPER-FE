@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getMyProfile,
+  getUserProfile,
   requestMyProfilePicturePresignedUrl,
   saveMyProfilePictureKey,
   sendHeartbeat,
@@ -25,6 +26,15 @@ export const useHeartbeat = () => {
 
     return () => clearInterval(intervalId);
   }, [mutate]);
+};
+
+export const useUserProfileQuery = (userId: string) => {
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["userProfile", userId],
+    queryFn: () => getUserProfile(userId),
+  });
+
+  return { data, isPending, isError, error };
 };
 
 const MY_PROFILE_QUERY_KEY = ["myProfile"] as const;
