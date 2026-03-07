@@ -1,12 +1,31 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getMyProfile,
   requestMyProfilePicturePresignedUrl,
   saveMyProfilePictureKey,
+  sendHeartbeat,
   updateMyStatusMessage,
   uploadFileToPresignedUrl,
 } from "@/service/userService";
+
+const HEARTBEAT_INTERVAL_MS = 30_000;
+
+export const useHeartbeat = () => {
+  const { mutate } = useMutation({
+    mutationFn: sendHeartbeat,
+  });
+
+  useEffect(() => {
+    const hasToken = !!localStorage.getItem("accessToken");
+    if (!hasToken) return;
+
+    mutate();
+    const intervalId = setInterval(() => mutate(), HEARTBEAT_INTERVAL_MS);
+
+    return () => clearInterval(intervalId);
+  }, [mutate]);
+};
 
 const MY_PROFILE_QUERY_KEY = ["myProfile"] as const;
 

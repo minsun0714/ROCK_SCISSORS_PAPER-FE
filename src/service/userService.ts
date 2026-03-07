@@ -94,6 +94,14 @@ export const saveMyProfilePictureKey = async ({ key }: SaveProfilePictureKeyPara
   return data;
 };
 
+export const sendHeartbeat = async () => {
+  const { data } = await apiClient.post("/users/me/presence/heartbeat", null, {
+    authRequired: true,
+  });
+
+  return data;
+};
+
 export const getMyProfile = async () => {
   const { data } = await apiClient.get<MyProfileResponse>("/users/me", {
     authRequired: true,
