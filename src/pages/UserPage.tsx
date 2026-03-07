@@ -1,7 +1,9 @@
 import { useParams } from "react-router-dom";
+import FriendStatusSection from "@/features/friend/components/FriendStatusSection";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import StatusMessageSection from "@/features/user/components/StatusMessageSection";
 import { useUserProfileQuery } from "@/features/user/hooks";
+
 
 function UserPage() {
   const { userId } = useParams<{ userId: string }>();
@@ -23,7 +25,8 @@ function UserPage() {
     );
   }
 
-  const { userId: profileUserId, nickname, profileImageUrl, statusMessage } = userProfile ?? {};
+  const { userId: profileUserId, nickname, profileImageUrl, statusMessage, friendInfo } =
+    userProfile ?? {};
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
@@ -32,6 +35,15 @@ function UserPage() {
       <ProfileImageSection userId={profileUserId} profileImageUrl={profileImageUrl} />
 
       <StatusMessageSection statusMessage={statusMessage ?? ""} />
+
+      {friendInfo && profileUserId != null && (
+        <FriendStatusSection
+          userId={userId!}
+          targetUserId={profileUserId}
+          friendStatus={friendInfo.status}
+          friendRequestId={friendInfo.friendRequestId}
+        />
+      )}
     </main>
   );
 }

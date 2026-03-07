@@ -24,11 +24,19 @@ type SaveProfilePictureKeyParams = {
 
 export type PresenceStatus = "ONLINE" | "OFFLINE" | "IN_BATTLE";
 
+export type FriendStatus = "NONE" | "PENDING" | "REQUESTED" | "FRIEND";
+
+type FriendInfo = {
+  status: FriendStatus;
+  friendRequestId?: number | null;
+};
+
 export type UserProfileResponse = {
   userId?: number | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   statusMessage?: string | null;
+  friendInfo?: FriendInfo | null;
 };
 
 export type MyProfileResponse = {
