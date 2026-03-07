@@ -24,15 +24,15 @@ type SaveProfilePictureKeyParams = {
 export type PresenceStatus = "ONLINE" | "OFFLINE" | "IN_BATTLE";
 
 export type UserProfileResponse = {
+  userId?: number | null;
   nickname?: string | null;
   profileImageUrl?: string | null;
   statusMessage?: string | null;
-  presenceStatus?: PresenceStatus | null;
 };
 
 export type MyProfileResponse = {
+  userId?: number | null;
   profileImageUrl?: string | null;
-  presenceStatus?: PresenceStatus | null;
 };
 
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
@@ -110,6 +110,16 @@ export const sendHeartbeat = async () => {
   });
 
   return data;
+};
+
+type BulkPresenceResponse = {
+  presenceStatuses: Record<string, PresenceStatus>;
+};
+
+export const getBulkPresence = async (userIds: number[]) => {
+  const { data } = await apiClient.post<BulkPresenceResponse>("/users/presence", { userIds });
+
+  return data.presenceStatuses;
 };
 
 export const getUserProfile = async (userId: string) => {

@@ -23,13 +23,13 @@ function UserPage() {
     );
   }
 
-  const { nickname, profileImageUrl, statusMessage, presenceStatus } = userProfile ?? {};
+  const { userId: profileUserId, nickname, profileImageUrl, statusMessage } = userProfile ?? {};
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
       <h1 className="text-3xl font-bold text-slate-900">{nickname ?? "프로필"}</h1>
 
-      <ProfileImageSection profileImageUrl={profileImageUrl} presenceStatus={presenceStatus} />
+      <ProfileImageSection userId={profileUserId} profileImageUrl={profileImageUrl} />
 
       <StatusMessageSection statusMessage={statusMessage ?? ""} />
     </main>

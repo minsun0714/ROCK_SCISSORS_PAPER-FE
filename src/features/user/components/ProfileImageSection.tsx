@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import type { PresenceStatus } from "@/service/userService";
+import { usePresence } from "@/features/presence/usePresence";
 
 const getPresenceColor = (status: string) => {
   switch (status) {
@@ -13,22 +13,26 @@ const getPresenceColor = (status: string) => {
 };
 
 type ProfileImageSectionProps = {
+  userId?: number | null;
   profileImageUrl?: string | null;
-  presenceStatus?: PresenceStatus | null;
   isPending?: boolean;
   onFileChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 };
 
 function ProfileImageSection({
+  userId,
   profileImageUrl,
-  presenceStatus,
   isPending = false,
   onFileChange,
 }: ProfileImageSectionProps) {
   const editable = !!onFileChange;
+  const { ref, presenceStatus } = usePresence(userId);
 
   return (
-    <section className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
+    <section
+      ref={ref}
+      className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+    >
       <h2 className="mb-3 text-lg font-semibold text-slate-800">프로필 이미지</h2>
       <div className={`${editable ? "mb-4" : ""} flex justify-center`}>
         <div className="relative" style={{ width: 256, height: 256 }}>
