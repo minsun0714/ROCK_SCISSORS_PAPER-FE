@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   getMyProfile,
   getUserProfile,
@@ -79,17 +80,6 @@ export const useUpdateMyStatusMessageMutation = () => {
     resultMessage,
     setResultMessage,
   };
-};
-
-const useDebouncedValue = <T>(value: T, delay: number = 300): T => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setDebouncedValue(value), delay);
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debouncedValue;
 };
 
 export const useUserSearchQuery = (keyword: string, size: number = 10) => {

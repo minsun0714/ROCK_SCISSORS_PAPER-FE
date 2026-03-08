@@ -1,5 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import FriendListSection from "@/features/friend/components/FriendListSection";
+import { useMyFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import StatusMessageEditModal from "@/features/user/components/StatusMessageEditModal";
 import StatusMessageSection from "@/features/user/components/StatusMessageSection";
@@ -11,6 +13,7 @@ import {
 function MyPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
+  const [friendKeyword, setFriendKeyword] = useState("");
 
   const { data: myProfile } = useMyProfileQuery();
 
@@ -57,6 +60,9 @@ function MyPage() {
     uploadProfileImage(uploadFile);
   };
 
+  const { friends, fetchNextPage, hasNextPage, isFetchingNextPage, isPending: isFriendsPending, isError: isFriendsError } =
+    useMyFriendsQuery(friendKeyword);
+
   const displayMessage = resultMessage || uploadProfileImageResultMessage;
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
 
@@ -81,6 +87,18 @@ function MyPage() {
           {displayMessage}
         </p>
       )}
+
+      <FriendListSection
+        friends={friends}
+        keyword={friendKeyword}
+        onKeywordChange={setFriendKeyword}
+        fetchNextPage={fetchNextPage}
+        hasNextPage={hasNextPage ?? false}
+        isFetchingNextPage={isFetchingNextPage}
+        isPending={isFriendsPending}
+        isError={isFriendsError}
+        invalidateKey="me"
+      />
 
       {isEditModalOpen && (
         <StatusMessageEditModal
