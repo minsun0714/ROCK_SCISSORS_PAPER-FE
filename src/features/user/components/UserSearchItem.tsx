@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CircleUserRound, Swords, UserCheck } from "lucide-react";
+import { Swords, UserCheck, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { usePresence } from "@/features/presence/usePresence";
@@ -20,7 +20,7 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
           <Avatar className="h-10 w-10">
             {user.profileImageUrl && <AvatarImage src={user.profileImageUrl} alt={user.nickname} />}
             <AvatarFallback>
-              <CircleUserRound className="h-5 w-5 text-muted-foreground" />
+              <UserRound className="h-5 w-5 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
           <span

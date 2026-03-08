@@ -47,7 +47,7 @@ function UserPage() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center gap-5 px-4 py-10">
-      <h1 className="font-display text-3xl tracking-tight">{nickname ?? "프로필"}</h1>
+      <h1 className="font-display text-3xl tracking-tight text-primary">{nickname ?? "프로필"}</h1>
 
       <ProfileImageSection
         userId={profileUserId}

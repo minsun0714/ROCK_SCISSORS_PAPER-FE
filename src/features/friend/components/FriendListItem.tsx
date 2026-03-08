@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { CircleUserRound, Swords } from "lucide-react";
+import { Swords, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { usePresence } from "@/features/presence/usePresence";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
@@ -26,7 +26,7 @@ function FriendListItem({
           <Avatar className="h-10 w-10">
             {friend.profileImageUrl && <AvatarImage src={friend.profileImageUrl} alt={friend.nickname} />}
             <AvatarFallback>
-              <CircleUserRound className="h-5 w-5 text-muted-foreground" />
+              <UserRound className="h-5 w-5 text-muted-foreground" />
             </AvatarFallback>
           </Avatar>
           <span

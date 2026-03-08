@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, CircleUserRound } from "lucide-react";
+import { Bell, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -70,7 +70,7 @@ function NotificationBell({
                         <AvatarImage src={notification.data.profileImageUrl as string} />
                       )}
                       <AvatarFallback>
-                        <CircleUserRound className="h-5 w-5 text-muted-foreground" />
+                        <UserRound className="h-5 w-5 text-muted-foreground" />
                       </AvatarFallback>
                     </Avatar>
                     <div className="min-w-0">

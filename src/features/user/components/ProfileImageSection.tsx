@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import { Camera, Loader2, Pencil } from "lucide-react";
+import { Camera, Loader2, Pencil, UserRound } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -32,7 +32,9 @@ function ProfileImageSection({
         <div className="relative">
           <Avatar className="h-48 w-48">
             {profileImageUrl && <AvatarImage src={profileImageUrl} alt="프로필 이미지" />}
-            <AvatarFallback className="text-sm text-muted-foreground">이미지 없음</AvatarFallback>
+            <AvatarFallback>
+              <UserRound className="h-20 w-20 text-muted-foreground" />
+            </AvatarFallback>
           </Avatar>
           {presenceStatus && (
             <span
