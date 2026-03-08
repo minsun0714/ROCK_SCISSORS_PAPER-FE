@@ -4,6 +4,7 @@ import { useMyProfileQuery } from "@/features/user/hooks";
 import type { FriendResponse } from "@/service/friendService";
 import {
   useAcceptFriendRequestMutation,
+  useCancelFriendRequestMutation,
   useRejectFriendRequestMutation,
   useSendFriendRequestMutation,
 } from "@/features/friend/hooks";
@@ -23,6 +24,8 @@ function FriendActionButtons({
     useAcceptFriendRequestMutation(invalidateKey);
   const { mutate: reject, isPending: isRejecting } =
     useRejectFriendRequestMutation(invalidateKey);
+  const { mutate: cancel, isPending: isCancelling } =
+    useCancelFriendRequestMutation();
 
   const { friendInfo, userId } = friend;
   const friendStatus = friendInfo?.status;
@@ -36,8 +39,20 @@ function FriendActionButtons({
     return <UserCheck className="h-4 w-4 shrink-0 text-green-600" />;
   }
 
-  if (friendStatus === "REQUESTED") {
-    return <span className="shrink-0 text-xs text-slate-400">요청됨</span>;
+  if (friendStatus === "REQUESTED" && friendRequestId != null) {
+    return (
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          cancel(friendRequestId);
+        }}
+        disabled={isCancelling}
+        className="shrink-0 rounded bg-slate-500 px-2 py-0.5 text-xs text-white hover:bg-slate-400 disabled:opacity-50"
+      >
+        취소
+      </button>
+    );
   }
 
   if (friendStatus === "PENDING" && friendRequestId != null) {

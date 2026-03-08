@@ -58,6 +58,19 @@ export const useNotifications = (isLoggedIn: boolean) => {
       setHasUnread(true);
     });
 
+    eventSource.addEventListener("FRIEND_REQUEST_REJECTED", (event: MessageEvent) => {
+      const data: FriendRequestNotificationData = JSON.parse(event.data);
+      const notification: Notification = {
+        id: crypto.randomUUID(),
+        type: "FRIEND_REQUEST_REJECTED",
+        message: `${data.nickname}님이 친구 요청을 거절했습니다.`,
+        data,
+        createdAt: new Date().toISOString(),
+      };
+      setNotifications((prev) => [notification, ...prev]);
+      setHasUnread(true);
+    });
+
     eventSource.addEventListener("FRIEND_REQUEST_CANCELLED", (event: MessageEvent) => {
       const data: FriendRequestNotificationData = JSON.parse(event.data);
       setNotifications((prev) =>

@@ -65,6 +65,14 @@ export const sendFriendRequest = async (targetUserId: number) => {
   return data;
 };
 
+export const cancelFriendRequest = async (requestId: number) => {
+  const { data } = await apiClient.delete(`/friends/requests/${requestId}`, {
+    authRequired: true,
+  });
+
+  return data;
+};
+
 export const acceptFriendRequest = async (requestId: number) => {
   const { data } = await apiClient.patch(`/friends/requests/${requestId}/accept`, null, {
     authRequired: true,
