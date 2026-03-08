@@ -1,7 +1,9 @@
 import { Link, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
+import NotificationBell from "@/components/NotificationBell";
 import ProfileDropdown from "@/components/ProfileDropdown";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
+import { useNotifications } from "@/features/notification/useNotifications";
 import PresenceProvider from "@/features/presence/PresenceProvider";
 import { startGoogleLogin } from "@/service/authService";
 import { useHeartbeat, useMyProfileQuery } from "@/features/user/hooks";
@@ -11,6 +13,7 @@ function App() {
 
   const { data: myProfile, isPending } = useMyProfileQuery();
   const isLoggedIn = !!myProfile;
+  const { notifications, hasUnread, markAsRead, clearAll } = useNotifications(isLoggedIn);
 
   return (
     <PresenceProvider>
@@ -20,7 +23,15 @@ function App() {
             RSP
           </Link>
           {isPending ? null : isLoggedIn ? (
-            <ProfileDropdown profileImageUrl={myProfile.profileImageUrl} />
+            <div className="flex items-center gap-3">
+              <NotificationBell
+                notifications={notifications}
+                hasUnread={hasUnread}
+                onOpen={markAsRead}
+                onClearAll={clearAll}
+              />
+              <ProfileDropdown profileImageUrl={myProfile.profileImageUrl} />
+            </div>
           ) : (
             <button
               type="button"
