@@ -47,6 +47,11 @@ export const startGoogleLogin = () => {
   window.location.replace(GOOGLE_LOGIN_URL);
 };
 
+export const logout = () => {
+  localStorage.removeItem("accessToken");
+  window.location.replace("/");
+};
+
 export const consumePostLoginRedirectPath = () => {
   const savedPath = sessionStorage.getItem(POST_LOGIN_REDIRECT_KEY);
   sessionStorage.removeItem(POST_LOGIN_REDIRECT_KEY);
