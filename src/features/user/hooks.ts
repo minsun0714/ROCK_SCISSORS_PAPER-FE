@@ -45,6 +45,7 @@ export const useMyProfileQuery = () => {
   const { data, isPending, isError, error, refetch } = useQuery({
     queryKey: MY_PROFILE_QUERY_KEY,
     queryFn: getMyProfile,
+    retry: false,
   });
 
   return {
