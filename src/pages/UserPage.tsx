@@ -4,7 +4,6 @@ import FriendListSection from "@/features/friend/components/FriendListSection";
 import FriendStatusSection from "@/features/friend/components/FriendStatusSection";
 import { useOtherUserFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
-import StatusMessageSection from "@/features/user/components/StatusMessageSection";
 import { useMyProfileQuery, useUserProfileQuery } from "@/features/user/hooks";
 
 
@@ -17,10 +16,6 @@ function UserPage() {
   const { userId: profileUserId, nickname, profileImageUrl, statusMessage, friendInfo } =
     userProfile ?? {};
 
-  if (myProfile?.userId != null && String(myProfile.userId) === userId) {
-    return <Navigate to="/my" replace />;
-  }
-
   const {
     friends,
     fetchNextPage,
@@ -29,6 +24,10 @@ function UserPage() {
     isPending: isFriendsPending,
     isError: isFriendsError,
   } = useOtherUserFriendsQuery(profileUserId ?? 0, friendKeyword);
+
+  if (myProfile?.userId != null && String(myProfile.userId) === userId) {
+    return <Navigate to="/my" replace />;
+  }
 
   if (isPending) {
     return (
@@ -50,9 +49,11 @@ function UserPage() {
     <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center gap-5 px-4 py-10">
       <h1 className="text-3xl font-bold tracking-tight">{nickname ?? "프로필"}</h1>
 
-      <ProfileImageSection userId={profileUserId} profileImageUrl={profileImageUrl} />
-
-      <StatusMessageSection statusMessage={statusMessage ?? ""} />
+      <ProfileImageSection
+        userId={profileUserId}
+        profileImageUrl={profileImageUrl}
+        statusMessage={statusMessage ?? ""}
+      />
 
       {friendInfo && profileUserId != null && (
         <FriendStatusSection

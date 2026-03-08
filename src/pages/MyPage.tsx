@@ -5,7 +5,6 @@ import FriendListSection from "@/features/friend/components/FriendListSection";
 import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import StatusMessageEditModal from "@/features/user/components/StatusMessageEditModal";
-import StatusMessageSection from "@/features/user/components/StatusMessageSection";
 import {
   useMyProfileQuery,
   useUploadProfileImageMutation,
@@ -83,11 +82,8 @@ function MyPage() {
         profileImageUrl={profileImageUrl}
         isPending={isUploadProfileImagePending}
         onFileChange={handleProfileImageChange}
-      />
-
-      <StatusMessageSection
         statusMessage={statusMessage ?? ""}
-        onEditClick={() => setIsEditModalOpen(true)}
+        onStatusEditClick={() => setIsEditModalOpen(true)}
       />
 
       {displayMessage && (
