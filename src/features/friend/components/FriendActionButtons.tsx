@@ -37,7 +37,7 @@ function FriendActionButtons({
   }
 
   if (friendStatus === "FRIEND") {
-    return <UserCheck className="h-4 w-4 shrink-0 text-green-600" />;
+    return <UserCheck className="h-4 w-4 shrink-0 text-primary" />;
   }
 
   if (friendStatus === "REQUESTED" && friendRequestId != null) {
@@ -68,7 +68,7 @@ function FriendActionButtons({
             accept(friendRequestId);
           }}
           disabled={isAccepting}
-          className="h-7 bg-green-600 px-2 text-xs hover:bg-green-500"
+          className="h-7 px-2 text-xs"
         >
           수락
         </Button>

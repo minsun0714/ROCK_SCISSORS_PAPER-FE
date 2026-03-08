@@ -4,17 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePresence } from "@/features/presence/usePresence";
-
-const getPresenceColor = (status: string) => {
-  switch (status) {
-    case "ONLINE":
-      return "bg-green-500";
-    case "IN_BATTLE":
-      return "bg-amber-700";
-    default:
-      return "bg-gray-400";
-  }
-};
+import { presenceColorClass } from "@/features/presence/presenceColorClass";
 
 type ProfileImageSectionProps = {
   userId?: number | null;
@@ -46,7 +36,7 @@ function ProfileImageSection({
           </Avatar>
           {presenceStatus && (
             <span
-              className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-[3px] border-background ${getPresenceColor(presenceStatus)}`}
+              className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-[3px] border-background ${presenceColorClass(presenceStatus)}`}
             />
           )}
           {editable && (

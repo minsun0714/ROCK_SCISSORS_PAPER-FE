@@ -43,7 +43,7 @@ function FriendStatusSection({
         {friendStatus === "PENDING" && friendRequestId != null && (
           <div className="flex gap-3">
             <Button
-              className="flex-1 bg-green-600 hover:bg-green-500"
+              className="flex-1"
               onClick={() => { if (!isLoggedIn) return requireLogin(); accept(friendRequestId); }}
               disabled={isAccepting}
             >
@@ -66,8 +66,8 @@ function FriendStatusSection({
 
         {friendStatus === "FRIEND" && (
           <div className="flex items-center justify-between">
-            <Badge variant="secondary" className="gap-1.5 text-green-700">
-              <span className="h-2 w-2 rounded-full bg-green-500" />
+            <Badge variant="secondary" className="gap-1.5">
+              <span className="h-2 w-2 rounded-full bg-primary" />
               친구
             </Badge>
             <Button variant="secondary">

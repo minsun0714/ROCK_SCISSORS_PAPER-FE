@@ -31,10 +31,10 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
           <span className="text-sm font-medium">{user.nickname}</span>
           <div className="flex items-center gap-1.5">
             {status === "IN_BATTLE" && (
-              <Swords className="h-4 w-4 text-orange-500" />
+              <Swords className="h-4 w-4 text-amber-500" />
             )}
             {user.friendStatus === "FRIEND" && (
-              <Badge variant="secondary" className="gap-1 text-green-700">
+              <Badge variant="secondary" className="gap-1">
                 <UserCheck className="h-3 w-3" />
                 친구
               </Badge>
@@ -43,7 +43,7 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
               <Badge variant="outline" className="text-muted-foreground">요청됨</Badge>
             )}
             {user.friendStatus === "PENDING" && (
-              <Badge variant="outline" className="text-amber-600">수락 대기</Badge>
+              <Badge variant="outline" className="text-muted-foreground">수락 대기</Badge>
             )}
           </div>
         </div>

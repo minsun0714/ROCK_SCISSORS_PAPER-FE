@@ -20,7 +20,7 @@ function App() {
     <PresenceProvider>
       <LoginModalProvider isLoggedIn={isLoggedIn}>
         <header className="sticky top-0 z-10 flex w-full items-center justify-between border-b bg-background px-6 py-3 shadow-sm">
-          <Link to="/" className="text-xl font-bold tracking-tight no-underline">
+          <Link to="/" className="text-xl font-bold tracking-tight text-primary no-underline">
             RSP
           </Link>
           {isPending ? null : isLoggedIn ? (

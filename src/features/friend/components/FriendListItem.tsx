@@ -37,7 +37,7 @@ function FriendListItem({
           <span className="text-sm font-medium">{friend.nickname}</span>
           <div className="flex items-center gap-1.5">
             {status === "IN_BATTLE" && (
-              <Swords className="h-4 w-4 text-orange-500" />
+              <Swords className="h-4 w-4 text-amber-500" />
             )}
             <FriendActionButtons friend={friend} invalidateKey={invalidateKey} />
           </div>
