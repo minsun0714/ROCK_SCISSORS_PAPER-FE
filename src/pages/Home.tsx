@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { CircleUserRound } from "lucide-react";
 import { useUserSearchQuery } from "@/features/user/hooks";
 
 function Home() {
@@ -61,11 +62,15 @@ function Home() {
                   to={`/users/${user.userId}`}
                   className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50"
                 >
-                  <img
-                    src={user.profileImageUrl ?? "/default-profile.png"}
-                    alt={user.nickname}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
+                  {user.profileImageUrl ? (
+                    <img
+                      src={user.profileImageUrl}
+                      alt={user.nickname}
+                      className="h-10 w-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <CircleUserRound className="h-10 w-10 text-slate-400" />
+                  )}
                   <span className="text-sm font-medium text-slate-900">
                     {user.nickname}
                   </span>
