@@ -1,6 +1,7 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { getBulkPresence } from "@/service/userService";
 import type { PresenceStatus } from "@/service/userService";
 
@@ -57,7 +58,8 @@ function PresenceProvider({ children }: { children: ReactNode }) {
     observerRef.current?.unobserve(element);
   }, []);
 
-  const sortedIds = [...visibleUserIds].sort((a, b) => a - b);
+  const debouncedUserIds = useDebouncedValue(visibleUserIds, 500);
+  const sortedIds = [...debouncedUserIds].sort((a, b) => a - b);
   const queryKey = sortedIds.join(",");
 
   const { data: presenceMap = {} } = useQuery({
