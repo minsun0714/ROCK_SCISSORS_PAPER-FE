@@ -4,13 +4,15 @@ import {
   acceptFriendRequest,
   getMyFriends,
   getOtherUserFriends,
+  getPendingRequests,
+  getRequestedRequests,
   rejectFriendRequest,
   sendFriendRequest,
 } from "@/service/friendService";
 
 const MY_FRIENDS_QUERY_KEY = ["myFriends"] as const;
 
-export const useMyFriendsQuery = (keyword: string, size: number = 10) => {
+export const useMyFriendsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
   const debouncedKeyword = useDebouncedValue(keyword);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError } =
@@ -20,6 +22,43 @@ export const useMyFriendsQuery = (keyword: string, size: number = 10) => {
       initialPageParam: 0,
       getNextPageParam: (lastPage) =>
         lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      enabled,
+    });
+
+  const friends = data?.pages.flatMap((page) => page.content) ?? [];
+
+  return { friends, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError };
+};
+
+export const useMyPendingRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
+  const debouncedKeyword = useDebouncedValue(keyword);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError } =
+    useInfiniteQuery({
+      queryKey: ["myPendingRequests", debouncedKeyword, size],
+      queryFn: ({ pageParam }) => getPendingRequests(debouncedKeyword, pageParam, size),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) =>
+        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      enabled,
+    });
+
+  const friends = data?.pages.flatMap((page) => page.content) ?? [];
+
+  return { friends, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError };
+};
+
+export const useMyReceivedRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
+  const debouncedKeyword = useDebouncedValue(keyword);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError } =
+    useInfiniteQuery({
+      queryKey: ["myReceivedRequests", debouncedKeyword, size],
+      queryFn: ({ pageParam }) => getRequestedRequests(debouncedKeyword, pageParam, size),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) =>
+        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      enabled,
     });
 
   const friends = data?.pages.flatMap((page) => page.content) ?? [];

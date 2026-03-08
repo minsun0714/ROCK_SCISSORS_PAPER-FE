@@ -13,6 +13,7 @@ export type FriendResponse = {
 export const getMyFriends = async (keyword: string, page: number, size: number) => {
   const { data } = await apiClient.get<Paginated<FriendResponse>>("/friends/me", {
     params: { keyword, page, size },
+    authRequired: true,
   });
 
   return data;
@@ -31,6 +32,24 @@ export const getOtherUserFriends = async (
   return data;
 };
 
+export const getPendingRequests = async (keyword: string, page: number, size: number) => {
+  const { data } = await apiClient.get<Paginated<FriendResponse>>("/friends/requests/pending", {
+    params: { keyword, page, size },
+    authRequired: true,
+  });
+
+  return data;
+};
+
+export const getRequestedRequests = async (keyword: string, page: number, size: number) => {
+  const { data } = await apiClient.get<Paginated<FriendResponse>>("/friends/requests/requested", {
+    params: { keyword, page, size },
+    authRequired: true,
+  });
+
+  return data;
+};
+
 export const sendFriendRequest = async (targetUserId: number) => {
   const { data } = await apiClient.post(
     "/friends/requests",
@@ -42,21 +61,17 @@ export const sendFriendRequest = async (targetUserId: number) => {
 };
 
 export const acceptFriendRequest = async (requestId: number) => {
-  const { data } = await apiClient.patch(
-    `/friends/requests/${requestId}/accept`,
-    null,
-    { authRequired: true },
-  );
+  const { data } = await apiClient.patch(`/friends/requests/${requestId}/accept`, null, {
+    authRequired: true,
+  });
 
   return data;
 };
 
 export const rejectFriendRequest = async (requestId: number) => {
-  const { data } = await apiClient.patch(
-    `/friends/requests/${requestId}/reject`,
-    null,
-    { authRequired: true },
-  );
+  const { data } = await apiClient.patch(`/friends/requests/${requestId}/reject`, null, {
+    authRequired: true,
+  });
 
   return data;
 };

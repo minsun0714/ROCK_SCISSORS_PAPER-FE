@@ -74,6 +74,8 @@ function UserPage() {
           isPending={isFriendsPending}
           isError={isFriendsError}
           invalidateKey={userId!}
+          title="친구 목록"
+          emptyMessage="친구가 없습니다."
         />
       )}
     </main>

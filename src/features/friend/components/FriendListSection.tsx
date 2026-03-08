@@ -12,6 +12,8 @@ type FriendListSectionProps = {
   isPending: boolean;
   isError: boolean;
   invalidateKey: string;
+  title?: string;
+  emptyMessage?: string;
 };
 
 function FriendListSection({
@@ -24,6 +26,8 @@ function FriendListSection({
   isPending,
   isError,
   invalidateKey,
+  title,
+  emptyMessage = "목록이 비어있습니다.",
 }: FriendListSectionProps) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const bottomRef = useCallback(
@@ -47,8 +51,8 @@ function FriendListSection({
   }, []);
 
   return (
-    <section className="w-full max-w-xl">
-      <h2 className="mb-3 text-lg font-semibold text-slate-900">친구 목록</h2>
+    <div className="w-full max-w-xl">
+      {title && <h2 className="mb-3 text-lg font-semibold text-slate-900">{title}</h2>}
 
       <input
         type="text"
@@ -63,7 +67,7 @@ function FriendListSection({
       {isError && <p className="text-center text-sm text-red-500">목록을 불러오지 못했습니다.</p>}
 
       {!isPending && !isError && friends.length === 0 && (
-        <p className="text-center text-sm text-slate-500">친구가 없습니다.</p>
+        <p className="text-center text-sm text-slate-500">{emptyMessage}</p>
       )}
 
       {friends.length > 0 && (
@@ -79,7 +83,7 @@ function FriendListSection({
       )}
 
       <div ref={bottomRef} />
-    </section>
+    </div>
   );
 }
 
