@@ -14,20 +14,19 @@ import {
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 
-export const useHeartbeat = () => {
+export const useHeartbeat = (isLoggedIn: boolean) => {
   const { mutate } = useMutation({
     mutationFn: sendHeartbeat,
   });
 
   useEffect(() => {
-    const hasToken = !!localStorage.getItem("accessToken");
-    if (!hasToken) return;
+    if (!isLoggedIn) return;
 
     mutate();
     const intervalId = setInterval(() => mutate(), HEARTBEAT_INTERVAL_MS);
 
     return () => clearInterval(intervalId);
-  }, [mutate]);
+  }, [isLoggedIn, mutate]);
 };
 
 export const useUserProfileQuery = (userId: string) => {

@@ -9,10 +9,10 @@ import { startGoogleLogin } from "@/service/authService";
 import { useHeartbeat, useMyProfileQuery } from "@/features/user/hooks";
 
 function App() {
-  useHeartbeat();
-
   const { data: myProfile, isPending } = useMyProfileQuery();
   const isLoggedIn = !!myProfile;
+
+  useHeartbeat(isLoggedIn);
   const { notifications, hasUnread, markAsRead, clearAll } = useNotifications(isLoggedIn);
 
   return (

@@ -47,9 +47,13 @@ export const startGoogleLogin = () => {
   window.location.replace(GOOGLE_LOGIN_URL);
 };
 
-export const logout = () => {
-  localStorage.removeItem("accessToken");
-  window.location.replace("/");
+export const logout = async () => {
+  try {
+    await apiClient.post("/auth/logout", null, { authRequired: true });
+  } finally {
+    localStorage.removeItem("accessToken");
+    window.location.replace("/");
+  }
 };
 
 export const consumePostLoginRedirectPath = () => {
