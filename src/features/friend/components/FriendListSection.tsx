@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import FriendListItem from "@/features/friend/components/FriendListItem";
 import type { FriendResponse } from "@/service/friendService";
 
@@ -52,26 +54,28 @@ function FriendListSection({
 
   return (
     <div className="w-full max-w-xl">
-      {title && <h2 className="mb-3 text-lg font-semibold text-slate-900">{title}</h2>}
+      {title && <h2 className="mb-3 text-lg font-semibold">{title}</h2>}
 
-      <input
-        type="text"
-        value={keyword}
-        onChange={(e) => onKeywordChange(e.target.value)}
-        placeholder="친구 검색"
-        className="mb-3 w-full rounded-lg border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
-      />
+      <div className="relative mb-3">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          value={keyword}
+          onChange={(e) => onKeywordChange(e.target.value)}
+          placeholder="검색"
+          className="pl-9"
+        />
+      </div>
 
-      {isPending && <p className="text-center text-sm text-slate-500">불러오는 중...</p>}
+      {isPending && <p className="text-center text-sm text-muted-foreground">불러오는 중...</p>}
 
-      {isError && <p className="text-center text-sm text-red-500">목록을 불러오지 못했습니다.</p>}
+      {isError && <p className="text-center text-sm text-destructive">목록을 불러오지 못했습니다.</p>}
 
       {!isPending && !isError && friends.length === 0 && (
-        <p className="text-center text-sm text-slate-500">{emptyMessage}</p>
+        <p className="text-center text-sm text-muted-foreground">{emptyMessage}</p>
       )}
 
       {friends.length > 0 && (
-        <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200">
+        <ul className="divide-y overflow-hidden rounded-lg border">
           {friends.map((friend) => (
             <FriendListItem key={friend.userId} friend={friend} invalidateKey={invalidateKey} />
           ))}
@@ -79,7 +83,7 @@ function FriendListSection({
       )}
 
       {isFetchingNextPage && (
-        <p className="mt-2 text-center text-sm text-slate-500">더 불러오는 중...</p>
+        <p className="mt-3 text-center text-sm text-muted-foreground">더 불러오는 중...</p>
       )}
 
       <div ref={bottomRef} />

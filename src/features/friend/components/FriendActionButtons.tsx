@@ -1,4 +1,5 @@
 import { UserCheck, UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useLoginModal } from "@/features/auth/LoginModalContext";
 import { useMyProfileQuery } from "@/features/user/hooks";
 import type { FriendResponse } from "@/service/friendService";
@@ -41,65 +42,67 @@ function FriendActionButtons({
 
   if (friendStatus === "REQUESTED" && friendRequestId != null) {
     return (
-      <button
-        type="button"
+      <Button
+        variant="secondary"
+        size="sm"
         onClick={(e) => {
           e.preventDefault();
           cancel(friendRequestId);
         }}
         disabled={isCancelling}
-        className="shrink-0 rounded bg-slate-500 px-2 py-0.5 text-xs text-white hover:bg-slate-400 disabled:opacity-50"
+        className="h-7 px-2 text-xs"
       >
         취소
-      </button>
+      </Button>
     );
   }
 
   if (friendStatus === "PENDING" && friendRequestId != null) {
     return (
       <div className="flex shrink-0 gap-1">
-        <button
-          type="button"
+        <Button
+          size="sm"
           onClick={(e) => {
             e.preventDefault();
             if (!isLoggedIn) return requireLogin();
             accept(friendRequestId);
           }}
           disabled={isAccepting}
-          className="rounded bg-green-600 px-2 py-0.5 text-xs text-white hover:bg-green-500 disabled:opacity-50"
+          className="h-7 bg-green-600 px-2 text-xs hover:bg-green-500"
         >
           수락
-        </button>
-        <button
-          type="button"
+        </Button>
+        <Button
+          variant="destructive"
+          size="sm"
           onClick={(e) => {
             e.preventDefault();
             if (!isLoggedIn) return requireLogin();
             reject(friendRequestId);
           }}
           disabled={isRejecting}
-          className="rounded bg-red-600 px-2 py-0.5 text-xs text-white hover:bg-red-500 disabled:opacity-50"
+          className="h-7 px-2 text-xs"
         >
           거절
-        </button>
+        </Button>
       </div>
     );
   }
 
   if (!friendStatus || friendStatus === "NONE") {
     return (
-      <button
-        type="button"
+      <Button
+        size="icon"
         onClick={(e) => {
           e.preventDefault();
           if (!isLoggedIn) return requireLogin();
           sendRequest(userId);
         }}
         disabled={isSending}
-        className="shrink-0 rounded bg-indigo-600 p-1 text-white hover:bg-indigo-500 disabled:opacity-50"
+        className="h-7 w-7"
       >
         <UserPlus className="h-3.5 w-3.5" />
-      </button>
+      </Button>
     );
   }
 

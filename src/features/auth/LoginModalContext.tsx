@@ -1,5 +1,14 @@
 import { createContext, useCallback, useContext, useState } from "react";
 import type { ReactNode } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { startGoogleLogin } from "@/service/authService";
 
 type LoginModalContextType = {
@@ -28,45 +37,28 @@ export function LoginModalProvider({ isLoggedIn, children }: LoginModalProviderP
     }
   }, [isLoggedIn]);
 
-  const handleBackdropClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (event.target === event.currentTarget) setIsOpen(false);
-  };
-
   return (
     <LoginModalContext.Provider value={{ isLoggedIn, requireLogin }}>
       {children}
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60"
-          onClick={handleBackdropClick}
-        >
-          <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-lg">
-            <h2 className="mb-2 text-center text-lg font-semibold text-slate-900">
-              로그인이 필요합니다
-            </h2>
-            <p className="mb-6 text-center text-sm text-slate-500">
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>로그인이 필요합니다</DialogTitle>
+            <DialogDescription>
               이 기능을 사용하려면 로그인해주세요.
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                type="button"
-                onClick={startGoogleLogin}
-                className="w-full rounded-md bg-slate-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-slate-800"
-              >
-                Google로 로그인
-              </button>
-              <button
-                type="button"
-                onClick={() => setIsOpen(false)}
-                className="w-full rounded-md border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
-              >
-                닫기
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col gap-2 sm:flex-col">
+            <Button onClick={startGoogleLogin} className="w-full">
+              Google로 로그인
+            </Button>
+            <Button variant="outline" onClick={() => setIsOpen(false)} className="w-full">
+              닫기
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </LoginModalContext.Provider>
   );
 }

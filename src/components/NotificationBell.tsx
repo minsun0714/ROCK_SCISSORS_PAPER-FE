@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { Bell, CircleUserRound } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { Notification } from "@/features/notification/useNotifications";
 
 function NotificationBell({
@@ -35,50 +38,44 @@ function NotificationBell({
 
   return (
     <div className="relative" ref={panelRef}>
-      <button type="button" onClick={handleToggle} className="relative cursor-pointer p-1">
-        <Bell className="h-5 w-5 text-slate-700" />
+      <Button variant="ghost" size="icon" onClick={handleToggle} className="relative">
+        <Bell className="h-5 w-5" />
         {hasUnread && (
-          <span className="absolute right-0.5 top-0.5 h-2 w-2 rounded-full bg-red-500" />
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
         )}
-      </button>
+      </Button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 rounded-lg border border-slate-200 bg-white shadow-lg">
-          <div className="flex items-center justify-between border-b border-slate-100 px-4 py-2">
-            <span className="text-sm font-semibold text-slate-900">알림</span>
+        <Card className="absolute right-0 mt-2 w-80 shadow-lg">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-semibold">알림</CardTitle>
             {notifications.length > 0 && (
-              <button
-                type="button"
-                onClick={onClearAll}
-                className="text-xs text-slate-400 hover:text-slate-600"
-              >
+              <Button variant="ghost" size="sm" onClick={onClearAll} className="h-auto px-2 py-1 text-xs text-muted-foreground">
                 모두 삭제
-              </button>
+              </Button>
             )}
-          </div>
-
-          <div className="max-h-64 overflow-y-auto">
+          </CardHeader>
+          <CardContent className="max-h-72 overflow-y-auto p-0">
             {notifications.length === 0 ? (
-              <p className="px-4 py-6 text-center text-sm text-slate-400">알림이 없습니다.</p>
+              <p className="px-6 py-8 text-center text-sm text-muted-foreground">알림이 없습니다.</p>
             ) : (
               <ul>
                 {notifications.map((notification) => (
                   <li
                     key={notification.id}
-                    className="flex items-start gap-3 border-b border-slate-50 px-4 py-3 last:border-b-0"
+                    className="flex items-start gap-3 border-t px-4 py-3"
                   >
-                    {notification.data?.profileImageUrl ? (
-                      <img
-                        src={notification.data.profileImageUrl as string}
-                        alt=""
-                        className="h-8 w-8 shrink-0 rounded-full object-cover"
-                      />
-                    ) : (
-                      <CircleUserRound className="h-8 w-8 shrink-0 text-slate-400" />
-                    )}
-                    <div>
-                      <p className="text-sm text-slate-700">{notification.message}</p>
-                      <p className="mt-1 text-xs text-slate-400">
+                    <Avatar className="h-8 w-8 shrink-0">
+                      {notification.data?.profileImageUrl && (
+                        <AvatarImage src={notification.data.profileImageUrl as string} />
+                      )}
+                      <AvatarFallback>
+                        <CircleUserRound className="h-5 w-5 text-muted-foreground" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm">{notification.message}</p>
+                      <p className="mt-0.5 text-xs text-muted-foreground">
                         {new Date(notification.createdAt).toLocaleString("ko-KR")}
                       </p>
                     </div>
@@ -86,8 +83,8 @@ function NotificationBell({
                 ))}
               </ul>
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

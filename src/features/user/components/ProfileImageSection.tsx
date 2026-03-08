@@ -1,4 +1,7 @@
 import type { ChangeEvent } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { usePresence } from "@/features/presence/usePresence";
 
 const getPresenceColor = (status: string) => {
@@ -29,51 +32,42 @@ function ProfileImageSection({
   const { ref, presenceStatus } = usePresence(userId);
 
   return (
-    <section
-      ref={ref}
-      className="w-full max-w-xl rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-    >
-      <h2 className="mb-3 text-lg font-semibold text-slate-800">프로필 이미지</h2>
-      <div className={`${editable ? "mb-4" : ""} flex justify-center`}>
-        <div className="relative" style={{ width: 256, height: 256 }}>
-          {profileImageUrl ? (
-            <img
-              src={profileImageUrl}
-              alt="프로필 이미지"
-              className="h-full w-full rounded-full object-cover ring-2 ring-slate-200"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center rounded-full bg-slate-100 text-xs text-slate-500">
-              이미지 없음
-            </div>
-          )}
+    <Card className="w-full max-w-xl" ref={ref}>
+      <CardHeader>
+        <CardTitle>프로필 이미지</CardTitle>
+      </CardHeader>
+      <CardContent className="flex flex-col items-center gap-4">
+        <div className="relative">
+          <Avatar className="h-48 w-48">
+            {profileImageUrl && <AvatarImage src={profileImageUrl} alt="프로필 이미지" />}
+            <AvatarFallback className="text-sm text-muted-foreground">이미지 없음</AvatarFallback>
+          </Avatar>
           {presenceStatus && (
             <span
-              className={`absolute bottom-[12px] right-[12px] h-[24px] w-[24px] rounded-full border-[3px] border-white ${getPresenceColor(presenceStatus)}`}
+              className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-[3px] border-background ${getPresenceColor(presenceStatus)}`}
             />
           )}
         </div>
-      </div>
 
-      {editable && (
-        <div className="flex justify-center">
-          <label
-            htmlFor="profile-image-input"
-            className="cursor-pointer rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
-          >
-            {isPending ? "업로드 중..." : "프로필 이미지 업로드"}
-          </label>
-          <input
-            id="profile-image-input"
-            type="file"
-            accept="image/*"
-            onChange={onFileChange}
-            className="hidden"
-            disabled={isPending}
-          />
-        </div>
-      )}
-    </section>
+        {editable && (
+          <div>
+            <label htmlFor="profile-image-input">
+              <Button variant="secondary" asChild disabled={isPending}>
+                <span>{isPending ? "업로드 중..." : "프로필 이미지 업로드"}</span>
+              </Button>
+            </label>
+            <input
+              id="profile-image-input"
+              type="file"
+              accept="image/*"
+              onChange={onFileChange}
+              className="hidden"
+              disabled={isPending}
+            />
+          </div>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 

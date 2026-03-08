@@ -2,6 +2,7 @@ import { Link, Outlet } from "react-router-dom";
 import { Toaster } from "sonner";
 import NotificationBell from "@/components/NotificationBell";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import { Button } from "@/components/ui/button";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
 import { useNotifications } from "@/features/notification/useNotifications";
 import PresenceProvider from "@/features/presence/PresenceProvider";
@@ -18,8 +19,8 @@ function App() {
   return (
     <PresenceProvider>
       <LoginModalProvider isLoggedIn={isLoggedIn}>
-        <header className="sticky top-0 z-10 flex w-full items-center justify-between border-b border-slate-200 bg-white px-4 py-3 shadow-sm">
-          <Link to="/" className="text-lg font-bold text-slate-900 no-underline">
+        <header className="sticky top-0 z-10 flex w-full items-center justify-between border-b bg-background px-6 py-3 shadow-sm">
+          <Link to="/" className="text-xl font-bold tracking-tight no-underline">
             RSP
           </Link>
           {isPending ? null : isLoggedIn ? (
@@ -33,13 +34,9 @@ function App() {
               <ProfileDropdown profileImageUrl={myProfile.profileImageUrl} />
             </div>
           ) : (
-            <button
-              type="button"
-              onClick={startGoogleLogin}
-              className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
-            >
+            <Button onClick={startGoogleLogin}>
               Google로 로그인
-            </button>
+            </Button>
           )}
         </header>
         <Outlet />

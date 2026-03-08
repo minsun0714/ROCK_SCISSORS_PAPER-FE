@@ -32,23 +32,23 @@ function UserPage() {
 
   if (isPending) {
     return (
-      <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center px-4 py-8">
-        <p className="text-sm text-slate-500">프로필을 불러오는 중...</p>
+      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center justify-center px-4 py-10">
+        <p className="text-sm text-muted-foreground">프로필을 불러오는 중...</p>
       </main>
     );
   }
 
   if (isError) {
     return (
-      <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center px-4 py-8">
-        <p className="text-sm text-red-500">프로필을 불러오지 못했습니다.</p>
+      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center justify-center px-4 py-10">
+        <p className="text-sm text-destructive">프로필을 불러오지 못했습니다.</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
-      <h1 className="text-3xl font-bold text-slate-900">{nickname ?? "프로필"}</h1>
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center gap-5 px-4 py-10">
+      <h1 className="text-3xl font-bold tracking-tight">{nickname ?? "프로필"}</h1>
 
       <ProfileImageSection userId={profileUserId} profileImageUrl={profileImageUrl} />
 

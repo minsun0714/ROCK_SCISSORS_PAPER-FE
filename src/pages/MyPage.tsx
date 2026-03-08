@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
@@ -10,12 +11,10 @@ import {
   useUploadProfileImageMutation,
 } from "@/features/user/hooks";
 
-type FriendTab = "friends" | "received" | "sent";
-
 function MyPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
-  const [friendTab, setFriendTab] = useState<FriendTab>("friends");
+  const [friendTab, setFriendTab] = useState("friends");
   const [friendKeyword, setFriendKeyword] = useState("");
 
   const { data: myProfile } = useMyProfileQuery();
@@ -76,8 +75,8 @@ function MyPage() {
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center justify-center gap-4 px-4 py-8">
-      <h1 className="text-3xl font-bold text-slate-900">My 페이지</h1>
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center gap-5 px-4 py-10">
+      <h1 className="text-3xl font-bold tracking-tight">My 페이지</h1>
 
       <ProfileImageSection
         userId={userId}
@@ -92,48 +91,41 @@ function MyPage() {
       />
 
       {displayMessage && (
-        <p className="w-full max-w-xl rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 shadow-sm">
+        <p className="w-full max-w-xl rounded-lg border bg-card px-4 py-2.5 text-sm">
           {displayMessage}
         </p>
       )}
 
       <section className="w-full max-w-xl">
-        <div className="mb-3 flex rounded-lg border border-slate-200 overflow-hidden">
-          {([
-            { key: "friends", label: "친구 목록" },
-            { key: "received", label: "나에게 온 요청" },
-            { key: "sent", label: "신청 내역" },
-          ] as const).map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => { setFriendTab(key); setFriendKeyword(""); }}
-              className={`flex-1 py-2 text-sm font-medium transition-colors ${
-                friendTab === key
-                  ? "bg-blue-500 text-white"
-                  : "bg-white text-slate-600 hover:bg-slate-50"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <Tabs
+          value={friendTab}
+          onValueChange={(value) => { setFriendTab(value); setFriendKeyword(""); }}
+        >
+          <TabsList className="mb-3 w-full">
+            <TabsTrigger value="friends" className="flex-1">친구 목록</TabsTrigger>
+            <TabsTrigger value="received" className="flex-1">나에게 온 요청</TabsTrigger>
+            <TabsTrigger value="sent" className="flex-1">신청 내역</TabsTrigger>
+          </TabsList>
 
-        <FriendListSection
-          friends={activeQuery.friends}
-          keyword={friendKeyword}
-          onKeywordChange={setFriendKeyword}
-          fetchNextPage={activeQuery.fetchNextPage}
-          hasNextPage={activeQuery.hasNextPage ?? false}
-          isFetchingNextPage={activeQuery.isFetchingNextPage}
-          isPending={activeQuery.isPending}
-          isError={activeQuery.isError}
-          invalidateKey="me"
-          emptyMessage={
-            friendTab === "friends" ? "친구가 없습니다." :
-            friendTab === "received" ? "받은 요청이 없습니다." :
-            "보낸 요청이 없습니다."
-          }
-        />
+          <TabsContent value={friendTab}>
+            <FriendListSection
+              friends={activeQuery.friends}
+              keyword={friendKeyword}
+              onKeywordChange={setFriendKeyword}
+              fetchNextPage={activeQuery.fetchNextPage}
+              hasNextPage={activeQuery.hasNextPage ?? false}
+              isFetchingNextPage={activeQuery.isFetchingNextPage}
+              isPending={activeQuery.isPending}
+              isError={activeQuery.isError}
+              invalidateKey="me"
+              emptyMessage={
+                friendTab === "friends" ? "친구가 없습니다." :
+                friendTab === "received" ? "받은 요청이 없습니다." :
+                "보낸 요청이 없습니다."
+              }
+            />
+          </TabsContent>
+        </Tabs>
       </section>
 
       {isEditModalOpen && (

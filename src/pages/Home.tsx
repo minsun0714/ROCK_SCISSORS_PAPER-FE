@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import UserSearchItem from "@/features/user/components/UserSearchItem";
 import { useUserSearchQuery } from "@/features/user/hooks";
 
@@ -29,32 +31,32 @@ function Home() {
   }, []);
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-3xl flex-col items-center px-4 py-8">
-      <h1 className="mb-6 text-4xl font-bold text-slate-900">가위바위보 게임</h1>
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center px-4 py-10">
+      <h1 className="mb-8 text-4xl font-bold tracking-tight">가위바위보 게임</h1>
 
-      <div className="w-full max-w-md">
-        <input
-          type="text"
+      <div className="relative w-full max-w-md">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
           value={keyword}
           onChange={(e) => setKeyword(e.target.value)}
           placeholder="유저 검색 (2글자 이상)"
-          className="w-full rounded-lg border border-slate-300 px-4 py-2 text-sm focus:border-blue-500 focus:outline-none"
+          className="pl-9"
         />
       </div>
 
-      <div className="mt-4 w-full max-w-md">
-        {isPending && <p className="text-center text-sm text-slate-500">검색 중...</p>}
+      <div className="mt-6 w-full max-w-md">
+        {isPending && <p className="text-center text-sm text-muted-foreground">검색 중...</p>}
 
         {isError && (
-          <p className="text-center text-sm text-red-500">검색에 실패했습니다.</p>
+          <p className="text-center text-sm text-destructive">검색에 실패했습니다.</p>
         )}
 
         {!isPending && !isError && users.length === 0 && (
-          <p className="text-center text-sm text-slate-500">검색 결과가 없습니다.</p>
+          <p className="text-center text-sm text-muted-foreground">검색 결과가 없습니다.</p>
         )}
 
         {users.length > 0 && (
-          <ul className="divide-y divide-slate-200 rounded-lg border border-slate-200">
+          <ul className="divide-y overflow-hidden rounded-lg border">
             {users.map((user) => (
               <UserSearchItem key={user.userId} user={user} />
             ))}
@@ -62,7 +64,7 @@ function Home() {
         )}
 
         {isFetchingNextPage && (
-          <p className="mt-2 text-center text-sm text-slate-500">더 불러오는 중...</p>
+          <p className="mt-3 text-center text-sm text-muted-foreground">더 불러오는 중...</p>
         )}
 
         <div ref={bottomRef} />

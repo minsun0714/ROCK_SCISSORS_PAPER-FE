@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
-import { CircleUserRound, UserCheck, Swords } from "lucide-react";
+import { CircleUserRound, Swords, UserCheck } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { usePresence } from "@/features/presence/usePresence";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import type { UserSearchResponse } from "@/service/userService";
@@ -12,38 +14,36 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
     <li ref={ref}>
       <Link
         to={`/users/${user.userId}`}
-        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-slate-50"
+        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
       >
         <div className="relative">
-          {user.profileImageUrl ? (
-            <img
-              src={user.profileImageUrl}
-              alt={user.nickname}
-              className="h-10 w-10 rounded-full object-cover"
-            />
-          ) : (
-            <CircleUserRound className="h-10 w-10 text-slate-400" />
-          )}
+          <Avatar className="h-10 w-10">
+            {user.profileImageUrl && <AvatarImage src={user.profileImageUrl} alt={user.nickname} />}
+            <AvatarFallback>
+              <CircleUserRound className="h-5 w-5 text-muted-foreground" />
+            </AvatarFallback>
+          </Avatar>
           <span
-            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white ${presenceColorClass(status)}`}
+            className={`absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-background ${presenceColorClass(status)}`}
           />
         </div>
         <div className="flex flex-1 items-center justify-between">
-          <span className="text-sm font-medium text-slate-900">
-            {user.nickname}
-          </span>
+          <span className="text-sm font-medium">{user.nickname}</span>
           <div className="flex items-center gap-1.5">
             {status === "IN_BATTLE" && (
               <Swords className="h-4 w-4 text-orange-500" />
             )}
             {user.friendStatus === "FRIEND" && (
-              <UserCheck className="h-4 w-4 text-green-600" />
+              <Badge variant="secondary" className="gap-1 text-green-700">
+                <UserCheck className="h-3 w-3" />
+                친구
+              </Badge>
             )}
             {user.friendStatus === "REQUESTED" && (
-              <span className="text-xs text-slate-400">요청됨</span>
+              <Badge variant="outline" className="text-muted-foreground">요청됨</Badge>
             )}
             {user.friendStatus === "PENDING" && (
-              <span className="text-xs text-amber-500">수락 대기</span>
+              <Badge variant="outline" className="text-amber-600">수락 대기</Badge>
             )}
           </div>
         </div>
