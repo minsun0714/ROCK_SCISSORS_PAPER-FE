@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/service/apiClient";
 
 
@@ -17,6 +18,7 @@ type FriendRequestNotificationData = {
 };
 
 export const useNotifications = (isLoggedIn: boolean) => {
+  const queryClient = useQueryClient();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [hasUnread, setHasUnread] = useState(false);
   const eventSourceRef = useRef<EventSource | null>(null);
@@ -32,6 +34,14 @@ export const useNotifications = (isLoggedIn: boolean) => {
     const eventSource = new EventSource(url);
     eventSourceRef.current = eventSource;
 
+    const invalidateFriendQueries = (...extra: string[][]) => {
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      queryClient.invalidateQueries({ queryKey: ["userSearch"] });
+      for (const key of extra) {
+        queryClient.invalidateQueries({ queryKey: key });
+      }
+    };
+
     eventSource.addEventListener("FRIEND_REQUESTED", (event: MessageEvent) => {
       const data: FriendRequestNotificationData = JSON.parse(event.data);
       const notification: Notification = {
@@ -43,6 +53,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       };
       setNotifications((prev) => [notification, ...prev]);
       setHasUnread(true);
+      invalidateFriendQueries(["myPendingRequests"]);
     });
 
     eventSource.addEventListener("FRIEND_REQUEST_ACCEPTED", (event: MessageEvent) => {
@@ -56,6 +67,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       };
       setNotifications((prev) => [notification, ...prev]);
       setHasUnread(true);
+      invalidateFriendQueries(["myReceivedRequests"], ["myFriends"]);
     });
 
     eventSource.addEventListener("FRIEND_REQUEST_REJECTED", (event: MessageEvent) => {
@@ -69,6 +81,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       };
       setNotifications((prev) => [notification, ...prev]);
       setHasUnread(true);
+      invalidateFriendQueries(["myReceivedRequests"]);
     });
 
     eventSource.addEventListener("FRIEND_REQUEST_CANCELLED", (event: MessageEvent) => {
@@ -78,6 +91,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
           (n) => !(n.type === "FRIEND_REQUESTED" && n.data?.senderId === data.senderId),
         ),
       );
+      invalidateFriendQueries(["myPendingRequests"]);
     });
 
     eventSource.onerror = () => {
@@ -88,7 +102,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       eventSource.close();
       eventSourceRef.current = null;
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, queryClient]);
 
   const markAsRead = () => setHasUnread(false);
   const clearAll = () => {
