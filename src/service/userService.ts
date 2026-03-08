@@ -139,3 +139,26 @@ export const getMyProfile = async () => {
 
   return data;
 };
+
+export type UserSearchResponse = {
+  userId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+};
+
+export type Paginated<T> = {
+  content: T[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+};
+
+export const searchUsers = async (keyword: string, page: number = 0, size: number = 10) => {
+  const { data } = await apiClient.get<Paginated<UserSearchResponse>>("/users/search", {
+    params: { keyword, page, size },
+    authRequired: true,
+  });
+
+  return data;
+};

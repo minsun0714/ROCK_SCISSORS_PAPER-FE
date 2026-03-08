@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getMyProfile,
   getUserProfile,
   requestMyProfilePicturePresignedUrl,
   saveMyProfilePictureKey,
+  searchUsers,
   sendHeartbeat,
   updateMyStatusMessage,
   uploadFileToPresignedUrl,
@@ -78,6 +79,34 @@ export const useUpdateMyStatusMessageMutation = () => {
     resultMessage,
     setResultMessage,
   };
+};
+
+const useDebouncedValue = <T>(value: T, delay: number = 300): T => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+export const useUserSearchQuery = (keyword: string, size: number = 10) => {
+  const debouncedKeyword = useDebouncedValue(keyword);
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError, error } =
+    useInfiniteQuery({
+      queryKey: ["userSearch", debouncedKeyword, size],
+      queryFn: ({ pageParam }) => searchUsers(debouncedKeyword, pageParam, size),
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) =>
+        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+    });
+
+  const users = data?.pages.flatMap((page) => page.content) ?? [];
+
+  return { users, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError, error };
 };
 
 export const useUploadProfileImageMutation = () => {
