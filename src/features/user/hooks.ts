@@ -13,6 +13,7 @@ import {
 } from "@/service/userService";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
+const hasToken = () => !!localStorage.getItem("accessToken");
 
 export const useHeartbeat = () => {
   const { mutate } = useMutation({
@@ -46,6 +47,7 @@ export const useMyProfileQuery = () => {
     queryKey: MY_PROFILE_QUERY_KEY,
     queryFn: getMyProfile,
     retry: false,
+    enabled: hasToken(),
   });
 
   return {

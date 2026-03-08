@@ -13,7 +13,6 @@ export type FriendResponse = {
 export const getMyFriends = async (keyword: string, page: number, size: number) => {
   const { data } = await apiClient.get<Paginated<FriendResponse>>("/friends/me", {
     params: { keyword, page, size },
-    authRequired: true,
   });
 
   return data;
@@ -27,7 +26,6 @@ export const getOtherUserFriends = async (
 ) => {
   const { data } = await apiClient.get<Paginated<FriendResponse>>(`/friends/${userId}`, {
     params: { keyword, page, size },
-    authRequired: true,
   });
 
   return data;
