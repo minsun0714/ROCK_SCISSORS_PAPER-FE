@@ -1,7 +1,7 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
 import FriendListSection from "@/features/friend/components/FriendListSection";
-import { useMyFriendsQuery, useMyPendingRequestsQuery, useMyReceivedRequestsQuery } from "@/features/friend/hooks";
+import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import StatusMessageEditModal from "@/features/user/components/StatusMessageEditModal";
 import StatusMessageSection from "@/features/user/components/StatusMessageSection";
@@ -10,7 +10,7 @@ import {
   useUploadProfileImageMutation,
 } from "@/features/user/hooks";
 
-type FriendTab = "friends" | "pending" | "received";
+type FriendTab = "friends" | "received" | "sent";
 
 function MyPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -64,13 +64,13 @@ function MyPage() {
   };
 
   const friendsQuery = useMyFriendsQuery(friendKeyword, 10, friendTab === "friends");
-  const pendingQuery = useMyPendingRequestsQuery(friendKeyword, 10, friendTab === "pending");
-  const receivedQuery = useMyReceivedRequestsQuery(friendKeyword, 10, friendTab === "received");
+  const receivedQuery = useReceivedRequestsQuery(friendKeyword, 10, friendTab === "received");
+  const sentQuery = useSentRequestsQuery(friendKeyword, 10, friendTab === "sent");
 
   const activeQuery =
     friendTab === "friends" ? friendsQuery :
-    friendTab === "pending" ? pendingQuery :
-    receivedQuery;
+    friendTab === "received" ? receivedQuery :
+    sentQuery;
 
   const displayMessage = resultMessage || uploadProfileImageResultMessage;
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
@@ -101,8 +101,8 @@ function MyPage() {
         <div className="mb-3 flex rounded-lg border border-slate-200 overflow-hidden">
           {([
             { key: "friends", label: "친구 목록" },
-            { key: "pending", label: "신청 내역" },
             { key: "received", label: "나에게 온 요청" },
+            { key: "sent", label: "신청 내역" },
           ] as const).map(({ key, label }) => (
             <button
               key={key}
@@ -130,8 +130,8 @@ function MyPage() {
           invalidateKey="me"
           emptyMessage={
             friendTab === "friends" ? "친구가 없습니다." :
-            friendTab === "pending" ? "보낸 요청이 없습니다." :
-            "받은 요청이 없습니다."
+            friendTab === "received" ? "받은 요청이 없습니다." :
+            "보낸 요청이 없습니다."
           }
         />
       </section>

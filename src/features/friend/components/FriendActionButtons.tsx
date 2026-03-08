@@ -24,7 +24,9 @@ function FriendActionButtons({
   const { mutate: reject, isPending: isRejecting } =
     useRejectFriendRequestMutation(invalidateKey);
 
-  const { friendStatus, friendRequestId, userId } = friend;
+  const { friendInfo, userId } = friend;
+  const friendStatus = friendInfo?.status;
+  const friendRequestId = friendInfo?.friendRequestId;
 
   if (myProfile?.userId === userId) {
     return null;
@@ -69,7 +71,7 @@ function FriendActionButtons({
     );
   }
 
-  if (friendStatus === "NONE") {
+  if (!friendStatus || friendStatus === "NONE") {
     return (
       <button
         type="button"

@@ -1,13 +1,18 @@
 import { apiClient } from "@/service/apiClient";
 import type { FriendStatus, Paginated, PresenceStatus } from "@/service/userService";
 
+type FriendInfo = {
+  status: FriendStatus;
+  friendRequestId: number | null;
+};
+
 export type FriendResponse = {
   userId: number;
   nickname: string;
   profileImageUrl: string | null;
+  statusMessage: string | null;
   presenceStatus: PresenceStatus;
-  friendStatus: FriendStatus;
-  friendRequestId: number | null;
+  friendInfo: FriendInfo | null;
 };
 
 export const getMyFriends = async (keyword: string, page: number, size: number) => {

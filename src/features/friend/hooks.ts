@@ -1,4 +1,5 @@
 import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import {
   acceptFriendRequest,
@@ -30,7 +31,7 @@ export const useMyFriendsQuery = (keyword: string, size: number = 10, enabled: b
   return { friends, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError };
 };
 
-export const useMyPendingRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
+export const useReceivedRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
   const debouncedKeyword = useDebouncedValue(keyword);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError } =
@@ -48,7 +49,7 @@ export const useMyPendingRequestsQuery = (keyword: string, size: number = 10, en
   return { friends, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError };
 };
 
-export const useMyReceivedRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
+export const useSentRequestsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
   const debouncedKeyword = useDebouncedValue(keyword);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isPending, isError } =
@@ -90,6 +91,12 @@ export const useSendFriendRequestMutation = (userId: string) => {
     mutationFn: (targetUserId: number) => sendFriendRequest(targetUserId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
+      queryClient.invalidateQueries({ queryKey: ["myPendingRequests"] });
+      queryClient.invalidateQueries({ queryKey: ["myReceivedRequests"] });
+      toast.success("친구 요청을 보냈습니다.");
+    },
+    onError: () => {
+      toast.error("친구 요청에 실패했습니다.");
     },
   });
 };
@@ -101,6 +108,12 @@ export const useAcceptFriendRequestMutation = (userId: string) => {
     mutationFn: (requestId: number) => acceptFriendRequest(requestId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
+      queryClient.invalidateQueries({ queryKey: MY_FRIENDS_QUERY_KEY });
+      queryClient.invalidateQueries({ queryKey: ["myPendingRequests"] });
+      toast.success("친구 요청을 수락했습니다.");
+    },
+    onError: () => {
+      toast.error("친구 요청 수락에 실패했습니다.");
     },
   });
 };
@@ -112,6 +125,11 @@ export const useRejectFriendRequestMutation = (userId: string) => {
     mutationFn: (requestId: number) => rejectFriendRequest(requestId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["userProfile", userId] });
+      queryClient.invalidateQueries({ queryKey: ["myPendingRequests"] });
+      toast.success("친구 요청을 거절했습니다.");
+    },
+    onError: () => {
+      toast.error("친구 요청 거절에 실패했습니다.");
     },
   });
 };

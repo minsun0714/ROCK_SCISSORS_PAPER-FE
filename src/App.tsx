@@ -1,4 +1,5 @@
 import { Link, Outlet } from "react-router-dom";
+import { Toaster } from "sonner";
 import ProfileDropdown from "@/components/ProfileDropdown";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
 import PresenceProvider from "@/features/presence/PresenceProvider";
@@ -31,6 +32,7 @@ function App() {
           )}
         </header>
         <Outlet />
+        <Toaster position="bottom-right" richColors />
       </LoginModalProvider>
     </PresenceProvider>
   );
