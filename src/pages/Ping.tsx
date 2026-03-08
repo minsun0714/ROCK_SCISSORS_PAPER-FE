@@ -35,7 +35,7 @@ function Ping() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-2xl flex-col items-center justify-center gap-4 px-4 py-8">
-      <h1 className="text-3xl font-bold">Ping 페이지</h1>
+      <h1 className="font-display text-3xl">Ping 페이지</h1>
       <form className="flex w-full max-w-xl flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
         <input
           value={statusMessage}

@@ -32,7 +32,7 @@ function Home() {
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center px-4 py-10">
-      <h1 className="mb-8 text-4xl font-bold tracking-tight">가위바위보 게임</h1>
+      <h1 className="mb-8 font-display text-4xl tracking-tight text-primary">가위바위보 게임</h1>
 
       <div className="relative w-full max-w-md">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
