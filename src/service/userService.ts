@@ -144,6 +144,8 @@ export type UserSearchResponse = {
   userId: number;
   nickname: string;
   profileImageUrl: string | null;
+  presenceStatus: PresenceStatus;
+  friendStatus: FriendStatus;
 };
 
 export type Paginated<T> = {
