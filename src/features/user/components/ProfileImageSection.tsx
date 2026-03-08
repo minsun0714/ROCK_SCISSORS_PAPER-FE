@@ -1,5 +1,5 @@
 import type { ChangeEvent } from "react";
-import { Pencil } from "lucide-react";
+import { Camera, Loader2, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -49,25 +49,29 @@ function ProfileImageSection({
               className={`absolute bottom-2 right-2 h-5 w-5 rounded-full border-[3px] border-background ${getPresenceColor(presenceStatus)}`}
             />
           )}
+          {editable && (
+            <>
+              <label
+                htmlFor="profile-image-input"
+                className="absolute bottom-1 left-1 flex h-9 w-9 cursor-pointer items-center justify-center rounded-full border-2 border-background bg-secondary text-secondary-foreground shadow-sm transition-colors hover:bg-secondary/80"
+              >
+                {isPending ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Camera className="h-4 w-4" />
+                )}
+              </label>
+              <input
+                id="profile-image-input"
+                type="file"
+                accept="image/*"
+                onChange={onFileChange}
+                className="hidden"
+                disabled={isPending}
+              />
+            </>
+          )}
         </div>
-
-        {editable && (
-          <div>
-            <label htmlFor="profile-image-input">
-              <Button variant="secondary" asChild disabled={isPending}>
-                <span>{isPending ? "업로드 중..." : "프로필 이미지 업로드"}</span>
-              </Button>
-            </label>
-            <input
-              id="profile-image-input"
-              type="file"
-              accept="image/*"
-              onChange={onFileChange}
-              className="hidden"
-              disabled={isPending}
-            />
-          </div>
-        )}
 
         <div className="flex w-full items-center gap-2">
           <p className="flex-1 text-center text-sm text-muted-foreground">
