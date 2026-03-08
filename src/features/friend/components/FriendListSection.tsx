@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { CircleUserRound, Swords, UserCheck, UserPlus } from "lucide-react";
+import { useLoginModal } from "@/features/auth/LoginModalContext";
+import { useMyProfileQuery } from "@/features/user/hooks";
 import type { FriendResponse } from "@/service/friendService";
 import type { PresenceStatus } from "@/service/userService";
 import {
@@ -39,6 +41,8 @@ function FriendActionButtons({
   friend: FriendResponse;
   invalidateKey: string;
 }) {
+  const { isLoggedIn, requireLogin } = useLoginModal();
+  const { data: myProfile } = useMyProfileQuery();
   const { mutate: sendRequest, isPending: isSending } =
     useSendFriendRequestMutation(invalidateKey);
   const { mutate: accept, isPending: isAccepting } =
@@ -47,6 +51,10 @@ function FriendActionButtons({
     useRejectFriendRequestMutation(invalidateKey);
 
   const { friendStatus, friendRequestId, userId } = friend;
+
+  if (myProfile?.userId === userId) {
+    return null;
+  }
 
   if (friendStatus === "FRIEND") {
     return <UserCheck className="h-4 w-4 shrink-0 text-green-600" />;
@@ -63,6 +71,7 @@ function FriendActionButtons({
           type="button"
           onClick={(e) => {
             e.preventDefault();
+            if (!isLoggedIn) return requireLogin();
             accept(friendRequestId);
           }}
           disabled={isAccepting}
@@ -74,6 +83,7 @@ function FriendActionButtons({
           type="button"
           onClick={(e) => {
             e.preventDefault();
+            if (!isLoggedIn) return requireLogin();
             reject(friendRequestId);
           }}
           disabled={isRejecting}
@@ -91,6 +101,7 @@ function FriendActionButtons({
         type="button"
         onClick={(e) => {
           e.preventDefault();
+          if (!isLoggedIn) return requireLogin();
           sendRequest(userId);
         }}
         disabled={isSending}

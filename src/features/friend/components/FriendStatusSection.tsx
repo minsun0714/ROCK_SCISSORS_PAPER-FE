@@ -1,3 +1,4 @@
+import { useLoginModal } from "@/features/auth/LoginModalContext";
 import type { FriendStatus } from "@/service/userService";
 import {
   useAcceptFriendRequestMutation,
@@ -18,6 +19,7 @@ function FriendStatusSection({
   friendStatus,
   friendRequestId,
 }: FriendStatusSectionProps) {
+  const { isLoggedIn, requireLogin } = useLoginModal();
   const { mutate: sendRequest, isPending: isSending } = useSendFriendRequestMutation(userId);
   const { mutate: accept, isPending: isAccepting } = useAcceptFriendRequestMutation(userId);
   const { mutate: reject, isPending: isRejecting } = useRejectFriendRequestMutation(userId);
@@ -28,7 +30,7 @@ function FriendStatusSection({
       {friendStatus === "NONE" && (
         <button
           type="button"
-          onClick={() => sendRequest(targetUserId)}
+          onClick={() => { if (!isLoggedIn) return requireLogin(); sendRequest(targetUserId); }}
           disabled={isSending}
           className="w-full px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-500 disabled:bg-indigo-300"
         >
@@ -40,7 +42,7 @@ function FriendStatusSection({
         <div className="flex gap-3">
           <button
             type="button"
-            onClick={() => accept(friendRequestId)}
+            onClick={() => { if (!isLoggedIn) return requireLogin(); accept(friendRequestId); }}
             disabled={isAccepting}
             className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-500 disabled:bg-green-300"
           >
@@ -48,7 +50,7 @@ function FriendStatusSection({
           </button>
           <button
             type="button"
-            onClick={() => reject(friendRequestId)}
+            onClick={() => { if (!isLoggedIn) return requireLogin(); reject(friendRequestId); }}
             disabled={isRejecting}
             className="flex-1 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-500 disabled:bg-red-300"
           >
