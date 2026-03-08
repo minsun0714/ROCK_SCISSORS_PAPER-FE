@@ -1,20 +1,25 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useParams } from "react-router-dom";
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import FriendStatusSection from "@/features/friend/components/FriendStatusSection";
 import { useOtherUserFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import StatusMessageSection from "@/features/user/components/StatusMessageSection";
-import { useUserProfileQuery } from "@/features/user/hooks";
+import { useMyProfileQuery, useUserProfileQuery } from "@/features/user/hooks";
 
 
 function UserPage() {
   const { userId } = useParams<{ userId: string }>();
+  const { data: myProfile } = useMyProfileQuery();
   const { data: userProfile, isPending, isError } = useUserProfileQuery(userId!);
   const [friendKeyword, setFriendKeyword] = useState("");
 
   const { userId: profileUserId, nickname, profileImageUrl, statusMessage, friendInfo } =
     userProfile ?? {};
+
+  if (myProfile?.userId != null && String(myProfile.userId) === userId) {
+    return <Navigate to="/my" replace />;
+  }
 
   const {
     friends,

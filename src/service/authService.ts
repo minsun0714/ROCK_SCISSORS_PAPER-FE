@@ -44,7 +44,7 @@ export const startGoogleLogin = () => {
   } = window;
   const currentPath = `${pathname}${search}${hash}`;
   sessionStorage.setItem(POST_LOGIN_REDIRECT_KEY, currentPath);
-  window.location.href = GOOGLE_LOGIN_URL;
+  window.location.replace(GOOGLE_LOGIN_URL);
 };
 
 export const consumePostLoginRedirectPath = () => {
