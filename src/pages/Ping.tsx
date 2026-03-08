@@ -34,9 +34,9 @@ function Ping() {
   const displayMessage = resultMessage || updateStatusResultMessage;
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-2xl flex-col items-center justify-center gap-4 px-4 py-8">
+    <main className="mx-auto flex min-h-[calc(100vh-72px)] w-full max-w-xl flex-col items-center justify-center gap-4 px-4 py-8">
       <h1 className="font-display text-3xl text-primary">Ping 페이지</h1>
-      <form className="flex w-full max-w-xl flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
+      <form className="flex w-full flex-col gap-3 sm:flex-row" onSubmit={handleSubmit}>
         <input
           value={statusMessage}
           onChange={handleStatusMessageChange}
@@ -52,7 +52,7 @@ function Ping() {
         </button>
       </form>
       {displayMessage && (
-        <p className="w-full max-w-xl rounded-md border bg-card px-3 py-2 text-sm shadow-sm">
+        <p className="w-full rounded-md border bg-card px-3 py-2 text-sm shadow-sm">
           {displayMessage}
         </p>
       )}

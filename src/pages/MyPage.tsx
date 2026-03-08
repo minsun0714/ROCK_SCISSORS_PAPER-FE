@@ -74,7 +74,7 @@ function MyPage() {
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-2xl flex-col items-center gap-5 px-4 py-10">
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-xl flex-col items-center gap-5 px-4 py-10">
       <h1 className="font-display text-3xl tracking-tight text-primary">마이페이지</h1>
 
       <ProfileImageSection
@@ -87,12 +87,12 @@ function MyPage() {
       />
 
       {displayMessage && (
-        <p className="w-full max-w-xl rounded-lg border bg-card px-4 py-2.5 text-sm">
+        <p className="w-full rounded-lg border bg-card px-4 py-2.5 text-sm">
           {displayMessage}
         </p>
       )}
 
-      <section className="w-full max-w-xl">
+      <section className="w-full">
         <Tabs
           value={friendTab}
           onValueChange={(value) => { setFriendTab(value); setFriendKeyword(""); }}

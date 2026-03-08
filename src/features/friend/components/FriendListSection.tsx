@@ -53,7 +53,7 @@ function FriendListSection({
   }, []);
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full">
       {title && <h2 className="mb-3 text-lg font-semibold">{title}</h2>}
 
       <div className="relative mb-3">

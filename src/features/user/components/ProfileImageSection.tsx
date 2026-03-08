@@ -27,7 +27,7 @@ function ProfileImageSection({
   const { ref, presenceStatus } = usePresence(userId);
 
   return (
-    <Card className="w-full max-w-xl" ref={ref}>
+    <Card className="w-full" ref={ref}>
       <CardContent className="flex flex-col items-center gap-4 pt-6">
         <div className="relative">
           <Avatar className="h-48 w-48">

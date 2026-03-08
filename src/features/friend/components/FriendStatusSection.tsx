@@ -28,7 +28,7 @@ function FriendStatusSection({
   const { mutate: reject, isPending: isRejecting } = useRejectFriendRequestMutation(userId);
 
   return (
-    <Card className="w-full max-w-xl">
+    <Card className="w-full">
       <CardContent className="pt-6">
         {friendStatus === "NONE" && (
           <Button

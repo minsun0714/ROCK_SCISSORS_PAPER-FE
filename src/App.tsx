@@ -19,25 +19,27 @@ function App() {
   return (
     <PresenceProvider>
       <LoginModalProvider isLoggedIn={isLoggedIn}>
-        <header className="sticky top-0 z-10 flex w-full items-center justify-between border-b bg-background px-6 py-3 shadow-sm">
-          <Link to="/" className="font-display text-xl tracking-tight text-primary no-underline">
-            RSP
-          </Link>
-          {isPending ? null : isLoggedIn ? (
-            <div className="flex items-center gap-3">
-              <NotificationBell
-                notifications={notifications}
-                hasUnread={hasUnread}
-                onOpen={markAsRead}
-                onClearAll={clearAll}
-              />
-              <ProfileDropdown profileImageUrl={myProfile.profileImageUrl} />
-            </div>
-          ) : (
-            <Button onClick={startGoogleLogin}>
-              Google로 로그인
-            </Button>
-          )}
+        <header className="sticky top-0 z-10 border-b bg-background shadow-sm">
+          <div className="mx-auto flex w-full max-w-xl items-center justify-between px-4 py-3">
+            <Link to="/" className="font-display text-xl tracking-tight text-primary no-underline">
+              RSP
+            </Link>
+            {isPending ? null : isLoggedIn ? (
+              <div className="flex items-center gap-3">
+                <NotificationBell
+                  notifications={notifications}
+                  hasUnread={hasUnread}
+                  onOpen={markAsRead}
+                  onClearAll={clearAll}
+                />
+                <ProfileDropdown profileImageUrl={myProfile.profileImageUrl} />
+              </div>
+            ) : (
+              <Button onClick={startGoogleLogin}>
+                Google로 로그인
+              </Button>
+            )}
+          </div>
         </header>
         <Outlet />
         <Toaster position="bottom-right" richColors />
