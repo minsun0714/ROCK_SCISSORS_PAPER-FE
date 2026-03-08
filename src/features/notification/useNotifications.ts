@@ -94,9 +94,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       invalidateFriendQueries(["myPendingRequests"]);
     });
 
-    eventSource.onerror = () => {
-      eventSource.close();
-    };
+    // EventSource는 onerror 시 자동 재연결하므로 close() 호출하지 않음
 
     return () => {
       eventSource.close();
