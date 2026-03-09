@@ -1,7 +1,8 @@
-import { UserCheck, UserPlus } from "lucide-react";
+import { Swords, UserCheck, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useLoginModal } from "@/features/auth/LoginModalContext";
 import { useMyProfileQuery } from "@/features/user/hooks";
+import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import type { FriendResponse } from "@/service/friendService";
 import {
   useAcceptFriendRequestMutation,
@@ -27,6 +28,8 @@ function FriendActionButtons({
     useRejectFriendRequestMutation(invalidateKey);
   const { mutate: cancel, isPending: isCancelling } =
     useCancelFriendRequestMutation();
+  const { mutate: sendBattle, isPending: isSendingBattle } =
+    useSendBattleRequestMutation();
 
   const { friendInfo, userId } = friend;
   const friendStatus = friendInfo?.status;
@@ -37,7 +40,25 @@ function FriendActionButtons({
   }
 
   if (friendStatus === "FRIEND") {
-    return <UserCheck className="h-4 w-4 shrink-0 text-primary" />;
+    return (
+      <div className="flex shrink-0 items-center gap-1.5">
+        <UserCheck className="h-4 w-4 text-primary" />
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={(e) => {
+            e.preventDefault();
+            if (!isLoggedIn) return requireLogin();
+            sendBattle(userId);
+          }}
+          disabled={isSendingBattle}
+          className="h-7 gap-1 px-2 text-xs"
+        >
+          <Swords className="h-3.5 w-3.5" />
+          대전
+        </Button>
+      </div>
+    );
   }
 
   if (friendStatus === "REQUESTED" && friendRequestId != null) {

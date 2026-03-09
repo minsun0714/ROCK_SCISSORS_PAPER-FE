@@ -3,7 +3,7 @@ import { PresenceContext } from "@/features/presence/PresenceProvider";
 import type { PresenceStatus } from "@/service/userService";
 
 export const usePresence = (userId: number | null | undefined) => {
-  const ref = useRef<HTMLDivElement>(null);
+  const ref = useRef<HTMLLIElement>(null);
   const { register, unregister, presenceMap } = useContext(PresenceContext);
 
   useEffect(() => {

@@ -157,8 +157,11 @@ export type Paginated<T> = {
 };
 
 export const searchUsers = async (keyword: string, page: number = 0, size: number = 10) => {
+  const hasToken = !!localStorage.getItem("accessToken");
+
   const { data } = await apiClient.get<Paginated<UserSearchResponse>>("/users/search", {
     params: { keyword, page, size },
+    authRequired: hasToken,
   });
 
   return data;

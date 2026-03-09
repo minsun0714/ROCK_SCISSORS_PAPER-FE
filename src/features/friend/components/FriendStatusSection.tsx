@@ -1,7 +1,9 @@
+import { Swords } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useLoginModal } from "@/features/auth/LoginModalContext";
+import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import type { FriendStatus } from "@/service/userService";
 import {
   useAcceptFriendRequestMutation,
@@ -26,6 +28,7 @@ function FriendStatusSection({
   const { mutate: sendRequest, isPending: isSending } = useSendFriendRequestMutation(userId);
   const { mutate: accept, isPending: isAccepting } = useAcceptFriendRequestMutation(userId);
   const { mutate: reject, isPending: isRejecting } = useRejectFriendRequestMutation(userId);
+  const { mutate: sendBattle, isPending: isSendingBattle } = useSendBattleRequestMutation();
 
   return (
     <Card className="w-full">
@@ -70,8 +73,14 @@ function FriendStatusSection({
               <span className="h-2 w-2 rounded-full bg-primary" />
               친구
             </Badge>
-            <Button variant="secondary">
-              대전 신청
+            <Button
+              variant="secondary"
+              className="gap-1.5"
+              onClick={() => { if (!isLoggedIn) return requireLogin(); sendBattle(targetUserId); }}
+              disabled={isSendingBattle}
+            >
+              <Swords className="h-4 w-4" />
+              {isSendingBattle ? "신청 중..." : "대전 신청"}
             </Button>
           </div>
         )}
