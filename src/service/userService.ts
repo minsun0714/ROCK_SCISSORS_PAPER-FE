@@ -146,6 +146,7 @@ export type UserSearchResponse = {
   profileImageUrl: string | null;
   presenceStatus: PresenceStatus;
   friendStatus: FriendStatus;
+  friendRequestId?: number | null;
 };
 
 export type Paginated<T> = {

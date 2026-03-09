@@ -16,10 +16,10 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
   const { mutate: sendBattle, isPending: isSendingBattle } = useSendBattleRequestMutation();
 
   return (
-    <li ref={ref}>
+    <li ref={ref} className="flex items-center">
       <Link
         to={`/users/${user.userId}`}
-        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
+        className="flex flex-1 items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
       >
         <div className="relative">
           <Avatar className="w-10 h-10">
@@ -34,43 +34,32 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
         </div>
         <div className="flex items-center justify-between flex-1">
           <span className="text-sm font-medium">{user.nickname}</span>
-          <div className="flex items-center gap-1.5">
-            {status === "IN_BATTLE" && <Swords className="w-4 h-4 text-amber-500" />}
-            {user.friendStatus === "FRIEND" && (
-              <>
-                <Badge variant="secondary" className="gap-1">
-                  <UserCheck className="w-3 h-3" />
-                  친구
-                </Badge>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!isLoggedIn) return requireLogin();
-                    sendBattle(user.userId);
-                  }}
-                  disabled={isSendingBattle}
-                  className="gap-1 px-2 text-xs h-7"
-                >
-                  <Swords className="h-3.5 w-3.5" />
-                  대전
-                </Button>
-              </>
-            )}
-            {user.friendStatus === "REQUESTED" && (
-              <Badge variant="outline" className="text-muted-foreground">
-                요청됨
-              </Badge>
-            )}
-            {user.friendStatus === "PENDING" && (
-              <Badge variant="outline" className="text-muted-foreground">
-                수락 대기
-              </Badge>
-            )}
-          </div>
+          {status === "IN_BATTLE" && <Swords className="w-4 h-4 text-amber-500" />}
         </div>
       </Link>
+      {user.friendStatus === "FRIEND" && (
+        <>
+          <div className="h-6 w-px bg-border" />
+          <div className="flex items-center gap-1.5 px-3">
+            <Badge variant="secondary" className="gap-1">
+              <UserCheck className="w-3 h-3" />
+              친구
+            </Badge>
+            <Button
+              size="sm"
+              onClick={() => {
+                if (!isLoggedIn) return requireLogin();
+                sendBattle(user.userId);
+              }}
+              disabled={isSendingBattle}
+              className="gap-1 px-2 text-xs h-7"
+            >
+              <Swords className="h-3.5 w-3.5" />
+              대전 신청
+            </Button>
+          </div>
+        </>
+      )}
     </li>
   );
 }
