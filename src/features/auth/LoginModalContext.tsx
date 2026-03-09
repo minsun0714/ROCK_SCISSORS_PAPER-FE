@@ -1,6 +1,8 @@
 import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { LoginModalContext } from "@/features/auth/loginModalStateContext";
+import { startGoogleLogin } from "@/service/authService";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,9 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { LoginModalContext } from "@/features/auth/loginModalContext";
-import { startGoogleLogin } from "@/service/authService";
+} from "@/shared/components/ui/dialog";
 
 type LoginModalProviderProps = {
   isLoggedIn: boolean;

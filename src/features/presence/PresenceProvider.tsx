@@ -1,9 +1,9 @@
 import { createContext, useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { getBulkPresence } from "@/service/userService";
 import type { PresenceStatus } from "@/service/userService";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 
 const PRESENCE_POLLING_INTERVAL_MS = 30_000;
 

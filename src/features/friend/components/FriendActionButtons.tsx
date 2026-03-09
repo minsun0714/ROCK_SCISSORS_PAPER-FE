@@ -1,5 +1,5 @@
 import { UserCheck, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import { useLoginModal } from "@/features/auth/hooks";
 import {
   useAcceptFriendRequestMutation,

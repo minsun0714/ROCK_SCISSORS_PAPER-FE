@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import NotificationBell from "@/components/NotificationBell";
 import ProfileDropdown from "@/components/ProfileDropdown";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import type { Notification } from "@/features/notification/hooks";
 import { startGoogleLogin } from "@/service/authService";
 

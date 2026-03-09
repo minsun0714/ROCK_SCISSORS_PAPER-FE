@@ -1,6 +1,6 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { getMyFriends } from "@/service/friendService";
+import { useDebouncedValue } from "@/shared/hooks/useDebouncedValue";
 
 export const useMyFriendsQuery = (keyword: string, size: number = 10, enabled: boolean = true) => {
   const debouncedKeyword = useDebouncedValue(keyword);
