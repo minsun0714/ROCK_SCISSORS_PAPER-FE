@@ -21,3 +21,23 @@ export const cancelBattleRequest = async (requestId: number) => {
     authRequired: true,
   });
 };
+
+export const acceptBattleRequest = async (requestId: number) => {
+  const { data } = await apiClient.patch(
+    `/battles/requests/${requestId}/accept`,
+    null,
+    { authRequired: true },
+  );
+
+  return data;
+};
+
+export const rejectBattleRequest = async (requestId: number) => {
+  const { data } = await apiClient.patch(
+    `/battles/requests/${requestId}/reject`,
+    null,
+    { authRequired: true },
+  );
+
+  return data;
+};

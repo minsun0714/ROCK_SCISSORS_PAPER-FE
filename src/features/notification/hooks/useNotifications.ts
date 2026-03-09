@@ -20,6 +20,7 @@ type FriendRequestNotificationData = {
   senderId: number;
   nickname: string;
   profileImageUrl: string | null;
+  requestId: number;
 };
 
 type BattleRequestNotificationData = {
