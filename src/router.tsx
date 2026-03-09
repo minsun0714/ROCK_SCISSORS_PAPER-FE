@@ -3,7 +3,6 @@ import App from "@/App";
 import Callback from "@/pages/Callback";
 import Home from "@/pages/Home";
 import MyPage from "@/pages/MyPage";
-import Ping from "@/pages/Ping";
 import UserPage from "@/pages/UserPage";
 
 const router = createBrowserRouter([
@@ -14,10 +13,6 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
-      },
-      {
-        path: "ping",
-        element: <Ping />,
       },
       {
         path: "my",
