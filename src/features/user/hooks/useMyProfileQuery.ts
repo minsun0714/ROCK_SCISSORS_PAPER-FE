@@ -8,6 +8,7 @@ export const useMyProfileQuery = () => {
     queryKey: MY_PROFILE_QUERY_KEY,
     queryFn: getMyProfile,
     retry: false,
+    throwOnError: true,
   });
 
   return {

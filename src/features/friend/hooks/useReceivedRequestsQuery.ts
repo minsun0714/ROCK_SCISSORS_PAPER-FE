@@ -17,6 +17,7 @@ export const useReceivedRequestsQuery = (
       getNextPageParam: (lastPage) =>
         lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
       enabled,
+      throwOnError: true,
     });
 
   const friends = data?.pages.flatMap((page) => page.content) ?? [];

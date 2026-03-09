@@ -12,6 +12,7 @@ export const useUserSearchQuery = (keyword: string, size: number = 10) => {
       initialPageParam: 0,
       getNextPageParam: (lastPage) =>
         lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      throwOnError: true,
     });
 
   const users = data?.pages.flatMap((page) => page.content) ?? [];
