@@ -1,5 +1,5 @@
-import { apiClient } from "@/service/apiClient";
 import type { FriendStatus, Paginated, PresenceStatus } from "@/service/userService";
+import { apiClient } from "@/shared/api/apiClient";
 
 type FriendInfo = {
   status: FriendStatus;

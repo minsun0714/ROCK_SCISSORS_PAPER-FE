@@ -1,4 +1,4 @@
-import { API_BASE_URL, apiClient } from "@/service/apiClient";
+import { API_BASE_URL, apiClient } from "@/shared/api/apiClient";
 
 const GOOGLE_LOGIN_URL = `${API_BASE_URL}/oauth2/authorization/google`;
 const POST_LOGIN_REDIRECT_KEY = "postLoginRedirectPath";

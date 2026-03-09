@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { API_BASE_URL } from "@/service/apiClient";
+import { API_BASE_URL } from "@/shared/api/apiClient";
 
 export type Notification = {
   id: string;
