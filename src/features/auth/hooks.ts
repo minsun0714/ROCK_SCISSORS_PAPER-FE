@@ -1,7 +1,10 @@
 import { useNavigate } from "react-router";
+import { useContext } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { LoginModalContext } from "@/features/auth/loginModalContext";
 import { consumePostLoginRedirectPath, processAuthCallback } from "@/service/authService";
 
+export const useLoginModal = () => useContext(LoginModalContext);
 
 export const useProcessAuthCallbackMutation = () => {
   const navigate = useNavigate();

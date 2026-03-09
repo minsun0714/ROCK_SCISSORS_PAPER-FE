@@ -1,13 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useLoginModal } from "@/features/auth/LoginModalContext";
-import type { FriendStatus } from "@/service/userService";
+import { useLoginModal } from "@/features/auth/hooks";
 import {
   useAcceptFriendRequestMutation,
   useRejectFriendRequestMutation,
   useSendFriendRequestMutation,
 } from "@/features/friend/hooks";
+import type { FriendStatus } from "@/service/userService";
 
 type FriendStatusSectionProps = {
   userId: string;
@@ -33,7 +33,10 @@ function FriendStatusSection({
         {friendStatus === "NONE" && (
           <Button
             className="w-full"
-            onClick={() => { if (!isLoggedIn) return requireLogin(); sendRequest(targetUserId); }}
+            onClick={() => {
+              if (!isLoggedIn) return requireLogin();
+              sendRequest(targetUserId);
+            }}
             disabled={isSending}
           >
             {isSending ? "요청 중..." : "친구 신청"}
@@ -44,7 +47,10 @@ function FriendStatusSection({
           <div className="flex gap-3">
             <Button
               className="flex-1"
-              onClick={() => { if (!isLoggedIn) return requireLogin(); accept(friendRequestId); }}
+              onClick={() => {
+                if (!isLoggedIn) return requireLogin();
+                accept(friendRequestId);
+              }}
               disabled={isAccepting}
             >
               {isAccepting ? "수락 중..." : "수락"}
@@ -52,7 +58,10 @@ function FriendStatusSection({
             <Button
               variant="destructive"
               className="flex-1"
-              onClick={() => { if (!isLoggedIn) return requireLogin(); reject(friendRequestId); }}
+              onClick={() => {
+                if (!isLoggedIn) return requireLogin();
+                reject(friendRequestId);
+              }}
               disabled={isRejecting}
             >
               {isRejecting ? "거절 중..." : "거절"}
@@ -70,9 +79,7 @@ function FriendStatusSection({
               <span className="h-2 w-2 rounded-full bg-primary" />
               친구
             </Badge>
-            <Button variant="secondary">
-              대전 신청
-            </Button>
+            <Button variant="secondary">대전 신청</Button>
           </div>
         )}
       </CardContent>
