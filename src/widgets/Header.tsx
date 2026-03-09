@@ -41,7 +41,7 @@ function Header({
             <ProfileDropdown profileImageUrl={profileImageUrl} />
           </div>
         ) : (
-          <Button onClick={startGoogleLogin}>Google로 로그인</Button>
+          <Button onClick={startGoogleLogin}>Google 로그인</Button>
         )}
       </div>
     </header>

@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import { LoginModalContext } from "@/features/auth/loginModalStateContext";
+import { LoginModalContext } from "@/features/auth/hooks/useLoginModal";
 import { startGoogleLogin } from "@/service/authService";
 import { Button } from "@/shared/components/ui/button";
 import {
