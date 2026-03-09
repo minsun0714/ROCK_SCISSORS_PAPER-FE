@@ -7,23 +7,34 @@ export const NotificationEventType = {
   FRIEND_REQUEST_ACCEPTED: "FRIEND_REQUEST_ACCEPTED",
   FRIEND_REQUEST_REJECTED: "FRIEND_REQUEST_REJECTED",
   FRIEND_REQUEST_CANCELLED: "FRIEND_REQUEST_CANCELLED",
+  BATTLE_REQUESTED: "BATTLE_REQUESTED",
+  BATTLE_REQUEST_ACCEPTED: "BATTLE_REQUEST_ACCEPTED",
+  BATTLE_REQUEST_REJECTED: "BATTLE_REQUEST_REJECTED",
+  BATTLE_REQUEST_CANCELLED: "BATTLE_REQUEST_CANCELLED",
 } as const;
 
 export type NotificationEventType =
   (typeof NotificationEventType)[keyof typeof NotificationEventType];
 
-export type Notification = {
-  id: string;
-  type: NotificationEventType;
-  message: string;
-  data?: FriendRequestNotificationData;
-  createdAt: string;
-};
-
 type FriendRequestNotificationData = {
   senderId: number;
   nickname: string;
   profileImageUrl: string | null;
+};
+
+type BattleRequestNotificationData = {
+  senderId: number;
+  nickname: string;
+  profileImageUrl: string | null;
+  requestId: number;
+};
+
+export type Notification = {
+  id: string;
+  type: NotificationEventType;
+  message: string;
+  data?: FriendRequestNotificationData | BattleRequestNotificationData;
+  createdAt: string;
 };
 
 export const useNotifications = (isLoggedIn: boolean) => {
@@ -50,6 +61,8 @@ export const useNotifications = (isLoggedIn: boolean) => {
         queryClient.invalidateQueries({ queryKey: key });
       }
     };
+
+    // ── 친구 요청 ──
 
     eventSource.addEventListener(NotificationEventType.FRIEND_REQUESTED, (event: MessageEvent) => {
       const data: FriendRequestNotificationData = JSON.parse(event.data);
@@ -113,6 +126,72 @@ export const useNotifications = (isLoggedIn: boolean) => {
           ),
         );
         invalidateFriendQueries(["myPendingRequests"]);
+      },
+    );
+
+    // ── 배틀 요청 ──
+
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUESTED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        const notification: Notification = {
+          id: crypto.randomUUID(),
+          type: NotificationEventType.BATTLE_REQUESTED,
+          message: `${data.nickname}님이 대전을 신청했습니다.`,
+          data,
+          createdAt: new Date().toISOString(),
+        };
+        setNotifications((prev) => [notification, ...prev]);
+        setHasUnread(true);
+      },
+    );
+
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUEST_ACCEPTED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        const notification: Notification = {
+          id: crypto.randomUUID(),
+          type: NotificationEventType.BATTLE_REQUEST_ACCEPTED,
+          message: `${data.nickname}님이 대전을 수락했습니다.`,
+          data,
+          createdAt: new Date().toISOString(),
+        };
+        setNotifications((prev) => [notification, ...prev]);
+        setHasUnread(true);
+      },
+    );
+
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUEST_REJECTED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        const notification: Notification = {
+          id: crypto.randomUUID(),
+          type: NotificationEventType.BATTLE_REQUEST_REJECTED,
+          message: `${data.nickname}님이 대전을 거절했습니다.`,
+          data,
+          createdAt: new Date().toISOString(),
+        };
+        setNotifications((prev) => [notification, ...prev]);
+        setHasUnread(true);
+      },
+    );
+
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUEST_CANCELLED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        setNotifications((prev) =>
+          prev.filter(
+            (n) =>
+              !(
+                n.type === NotificationEventType.BATTLE_REQUESTED &&
+                n.data?.senderId === data.senderId
+              ),
+          ),
+        );
       },
     );
 
