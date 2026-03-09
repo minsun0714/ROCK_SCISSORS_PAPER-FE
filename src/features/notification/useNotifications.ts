@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { API_BASE_URL } from "@/service/apiClient";
 
-
 export type Notification = {
   id: string;
   type: string;
@@ -87,9 +86,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
     eventSource.addEventListener("FRIEND_REQUEST_CANCELLED", (event: MessageEvent) => {
       const data: FriendRequestNotificationData = JSON.parse(event.data);
       setNotifications((prev) =>
-        prev.filter(
-          (n) => !(n.type === "FRIEND_REQUESTED" && n.data?.senderId === data.senderId),
-        ),
+        prev.filter((n) => !(n.type === "FRIEND_REQUESTED" && n.data?.senderId === data.senderId)),
       );
       invalidateFriendQueries(["myPendingRequests"]);
     });
