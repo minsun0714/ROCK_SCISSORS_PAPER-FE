@@ -1,13 +1,14 @@
 import { Toaster } from "sonner";
 import { Outlet } from "react-router-dom";
-import Header from "@/widgets/Header";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
 import { useNotifications } from "@/features/notification/hooks";
 import PresenceProvider from "@/features/presence/PresenceProvider";
 import { useHeartbeat, useMyProfileQuery } from "@/features/user/hooks";
+import ApiQueryBoundary from "@/shared/components/error/ApiQueryBoundary";
+import Header from "@/widgets/Header";
 
 function App() {
-  const { data: myProfile, isPending } = useMyProfileQuery();
+  const { data: myProfile, isPending } = useMyProfileQuery({ throwOnError: false });
   const isLoggedIn = !!myProfile;
 
   useHeartbeat(isLoggedIn);
@@ -25,7 +26,9 @@ function App() {
           onClearNotifications={clearAll}
           profileImageUrl={myProfile?.profileImageUrl}
         />
-        <Outlet />
+        <ApiQueryBoundary>
+          <Outlet />
+        </ApiQueryBoundary>
         <Toaster position="bottom-right" richColors />
       </LoginModalProvider>
     </PresenceProvider>
