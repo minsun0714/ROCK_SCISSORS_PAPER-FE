@@ -1,15 +1,15 @@
 import { Swords, UserCheck, UserPlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useLoginModal } from "@/features/auth/LoginModalContext";
-import { useMyProfileQuery } from "@/features/user/hooks";
+import { Button } from "@/shared/components/ui/button";
+import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
-import type { FriendResponse } from "@/service/friendService";
 import {
   useAcceptFriendRequestMutation,
   useCancelFriendRequestMutation,
   useRejectFriendRequestMutation,
   useSendFriendRequestMutation,
 } from "@/features/friend/hooks";
+import { useMyProfileQuery } from "@/features/user/hooks";
+import type { FriendResponse } from "@/service/friendService";
 
 function FriendActionButtons({
   friend,
@@ -20,16 +20,11 @@ function FriendActionButtons({
 }) {
   const { isLoggedIn, requireLogin } = useLoginModal();
   const { data: myProfile } = useMyProfileQuery();
-  const { mutate: sendRequest, isPending: isSending } =
-    useSendFriendRequestMutation(invalidateKey);
-  const { mutate: accept, isPending: isAccepting } =
-    useAcceptFriendRequestMutation(invalidateKey);
-  const { mutate: reject, isPending: isRejecting } =
-    useRejectFriendRequestMutation(invalidateKey);
-  const { mutate: cancel, isPending: isCancelling } =
-    useCancelFriendRequestMutation();
-  const { mutate: sendBattle, isPending: isSendingBattle } =
-    useSendBattleRequestMutation();
+  const { mutate: sendRequest, isPending: isSending } = useSendFriendRequestMutation(invalidateKey);
+  const { mutate: accept, isPending: isAccepting } = useAcceptFriendRequestMutation(invalidateKey);
+  const { mutate: reject, isPending: isRejecting } = useRejectFriendRequestMutation(invalidateKey);
+  const { mutate: cancel, isPending: isCancelling } = useCancelFriendRequestMutation();
+  const { mutate: sendBattle, isPending: isSendingBattle } = useSendBattleRequestMutation();
 
   const { friendInfo, userId } = friend;
   const friendStatus = friendInfo?.status;

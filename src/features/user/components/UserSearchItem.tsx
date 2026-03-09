@@ -1,16 +1,16 @@
-import { Link } from "react-router-dom";
 import { Swords, UserCheck, UserRound } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { useLoginModal } from "@/features/auth/LoginModalContext";
+import { Link } from "react-router-dom";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
-import { usePresence } from "@/features/presence/usePresence";
+import { usePresence } from "@/features/presence/hooks";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import type { UserSearchResponse } from "@/service/userService";
 
 function UserSearchItem({ user }: { user: UserSearchResponse }) {
-  const { ref, presenceStatus } = usePresence(user.userId);
+  const { ref, presenceStatus } = usePresence<HTMLLIElement>(user.userId);
   const status = presenceStatus ?? user.presenceStatus;
   const { isLoggedIn, requireLogin } = useLoginModal();
   const { mutate: sendBattle, isPending: isSendingBattle } = useSendBattleRequestMutation();
@@ -35,9 +35,7 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
         <div className="flex items-center justify-between flex-1">
           <span className="text-sm font-medium">{user.nickname}</span>
           <div className="flex items-center gap-1.5">
-            {status === "IN_BATTLE" && (
-              <Swords className="w-4 h-4 text-amber-500" />
-            )}
+            {status === "IN_BATTLE" && <Swords className="w-4 h-4 text-amber-500" />}
             {user.friendStatus === "FRIEND" && (
               <>
                 <Badge variant="secondary" className="gap-1">
@@ -61,10 +59,14 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
               </>
             )}
             {user.friendStatus === "REQUESTED" && (
-              <Badge variant="outline" className="text-muted-foreground">요청됨</Badge>
+              <Badge variant="outline" className="text-muted-foreground">
+                요청됨
+              </Badge>
             )}
             {user.friendStatus === "PENDING" && (
-              <Badge variant="outline" className="text-muted-foreground">수락 대기</Badge>
+              <Badge variant="outline" className="text-muted-foreground">
+                수락 대기
+              </Badge>
             )}
           </div>
         </div>

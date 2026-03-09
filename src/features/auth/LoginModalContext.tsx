@@ -1,6 +1,8 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import type { ReactNode } from "react";
-import { Button } from "@/components/ui/button";
+import { LoginModalContext } from "@/features/auth/hooks/useLoginModal";
+import { startGoogleLogin } from "@/service/authService";
+import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,20 +10,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { startGoogleLogin } from "@/service/authService";
-
-type LoginModalContextType = {
-  isLoggedIn: boolean;
-  requireLogin: () => void;
-};
-
-const LoginModalContext = createContext<LoginModalContextType>({
-  isLoggedIn: false,
-  requireLogin: () => {},
-});
-
-export const useLoginModal = () => useContext(LoginModalContext);
+} from "@/shared/components/ui/dialog";
 
 type LoginModalProviderProps = {
   isLoggedIn: boolean;
@@ -45,9 +34,7 @@ export function LoginModalProvider({ isLoggedIn, children }: LoginModalProviderP
         <DialogContent className="sm:max-w-sm">
           <DialogHeader>
             <DialogTitle>로그인이 필요합니다</DialogTitle>
-            <DialogDescription>
-              이 기능을 사용하려면 로그인해주세요.
-            </DialogDescription>
+            <DialogDescription>이 기능을 사용하려면 로그인해주세요.</DialogDescription>
           </DialogHeader>
           <DialogFooter className="flex-col gap-2 sm:flex-col">
             <Button onClick={startGoogleLogin} className="w-full">

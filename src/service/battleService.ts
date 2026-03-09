@@ -1,4 +1,4 @@
-import { apiClient } from "@/service/apiClient";
+import { apiClient } from "@/shared/api/apiClient";
 
 export type BattleRequestResponse = {
   requestId: number;

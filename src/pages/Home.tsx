@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Input } from "@/shared/components/ui/input";
 import UserSearchItem from "@/features/user/components/UserSearchItem";
 import { useUserSearchQuery } from "@/features/user/hooks";
 

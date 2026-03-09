@@ -1,9 +1,9 @@
-import type { ChangeEvent } from "react";
 import { Camera, Loader2, Pencil, UserRound } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { usePresence } from "@/features/presence/usePresence";
+import type { ChangeEvent } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent } from "@/shared/components/ui/card";
+import { usePresence } from "@/features/presence/hooks";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
 
 type ProfileImageSectionProps = {
@@ -24,7 +24,7 @@ function ProfileImageSection({
   onStatusEditClick,
 }: ProfileImageSectionProps) {
   const editable = !!onFileChange;
-  const { ref, presenceStatus } = usePresence(userId);
+  const { ref, presenceStatus } = usePresence<HTMLDivElement>(userId);
 
   return (
     <Card className="w-full" ref={ref}>
@@ -70,7 +70,12 @@ function ProfileImageSection({
             {statusMessage || "상태 메시지가 없습니다."}
           </p>
           {onStatusEditClick && (
-            <Button variant="ghost" size="icon" onClick={onStatusEditClick} className="h-8 w-8 shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={onStatusEditClick}
+              className="h-8 w-8 shrink-0"
+            >
               <Pencil className="h-4 w-4" />
             </Button>
           )}

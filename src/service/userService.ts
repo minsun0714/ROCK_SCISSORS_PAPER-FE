@@ -1,5 +1,5 @@
 import axios from "axios";
-import { apiClient } from "@/service/apiClient";
+import { apiClient } from "@/shared/api/apiClient";
 
 type UpdateStatusMessageParams = {
   statusMessage: string;
