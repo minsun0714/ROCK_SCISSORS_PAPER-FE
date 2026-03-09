@@ -6,7 +6,7 @@ export type Notification = {
   id: string;
   type: string;
   message: string;
-  data?: Record<string, unknown>;
+  data?: FriendRequestNotificationData;
   createdAt: string;
 };
 

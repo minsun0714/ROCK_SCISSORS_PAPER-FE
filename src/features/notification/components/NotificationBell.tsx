@@ -1,9 +1,9 @@
 import { Bell, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import type { Notification } from "@/features/notification/hooks";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import type { Notification } from "@/features/notification/hooks";
 
 function NotificationBell({
   notifications,

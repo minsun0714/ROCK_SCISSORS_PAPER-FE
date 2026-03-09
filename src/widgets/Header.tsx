@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
-import NotificationBell from "@/components/NotificationBell";
-import ProfileDropdown from "@/features/user/components/ProfileDropdown";
-import { Button } from "@/shared/components/ui/button";
+import NotificationBell from "@/features/notification/components/NotificationBell";
 import type { Notification } from "@/features/notification/hooks";
+import ProfileDropdown from "@/features/user/components/ProfileDropdown";
 import { startGoogleLogin } from "@/service/authService";
+import { Button } from "@/shared/components/ui/button";
 
 type HeaderProps = {
   isPending: boolean;
