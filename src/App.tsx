@@ -2,7 +2,7 @@ import { Toaster } from "sonner";
 import { Outlet } from "react-router-dom";
 import Header from "@/components/Header";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
-import { useNotifications } from "@/features/notification/useNotifications";
+import { useNotifications } from "@/features/notification/hooks";
 import PresenceProvider from "@/features/presence/PresenceProvider";
 import { useHeartbeat, useMyProfileQuery } from "@/features/user/hooks";
 

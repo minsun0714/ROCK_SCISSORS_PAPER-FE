@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
 import { Swords, UserRound } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { usePresence } from "@/features/presence/usePresence";
-import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import FriendActionButtons from "@/features/friend/components/FriendActionButtons";
+import { usePresence } from "@/features/presence/hooks";
+import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import type { FriendResponse } from "@/service/friendService";
 
 function FriendListItem({
@@ -13,7 +13,7 @@ function FriendListItem({
   friend: FriendResponse;
   invalidateKey: string;
 }) {
-  const { ref, presenceStatus } = usePresence(friend.userId);
+  const { ref, presenceStatus } = usePresence<HTMLLIElement>(friend.userId);
   const status = presenceStatus ?? friend.presenceStatus;
 
   return (
@@ -24,7 +24,9 @@ function FriendListItem({
       >
         <div className="relative">
           <Avatar className="h-10 w-10">
-            {friend.profileImageUrl && <AvatarImage src={friend.profileImageUrl} alt={friend.nickname} />}
+            {friend.profileImageUrl && (
+              <AvatarImage src={friend.profileImageUrl} alt={friend.nickname} />
+            )}
             <AvatarFallback>
               <UserRound className="h-5 w-5 text-muted-foreground" />
             </AvatarFallback>
@@ -36,9 +38,7 @@ function FriendListItem({
         <div className="flex flex-1 items-center justify-between">
           <span className="text-sm font-medium">{friend.nickname}</span>
           <div className="flex items-center gap-1.5">
-            {status === "IN_BATTLE" && (
-              <Swords className="h-4 w-4 text-amber-500" />
-            )}
+            {status === "IN_BATTLE" && <Swords className="h-4 w-4 text-amber-500" />}
             <FriendActionButtons friend={friend} invalidateKey={invalidateKey} />
           </div>
         </div>

@@ -2,8 +2,8 @@ import { useContext, useEffect, useRef } from "react";
 import { PresenceContext } from "@/features/presence/PresenceProvider";
 import type { PresenceStatus } from "@/service/userService";
 
-export const usePresence = (userId: number | null | undefined) => {
-  const ref = useRef<HTMLDivElement>(null);
+export const usePresence = <T extends Element = HTMLElement>(userId: number | null | undefined) => {
+  const ref = useRef<T>(null);
   const { register, unregister, presenceMap } = useContext(PresenceContext);
 
   useEffect(() => {
