@@ -1,6 +1,10 @@
-import { Swords, UserRound } from "lucide-react";
+import { Swords, UserCheck, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { useLoginModal } from "@/features/auth/hooks";
+import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import FriendActionButtons from "@/features/friend/components/FriendActionButtons";
 import { usePresence } from "@/features/presence/hooks";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
@@ -15,12 +19,15 @@ function FriendListItem({
 }) {
   const { ref, presenceStatus } = usePresence<HTMLLIElement>(friend.userId);
   const status = presenceStatus ?? friend.presenceStatus;
+  const { isLoggedIn, requireLogin } = useLoginModal();
+  const { mutate: sendBattle, isPending: isSendingBattle } = useSendBattleRequestMutation();
+  const isFriend = friend.friendInfo?.status === "FRIEND";
 
   return (
-    <li ref={ref}>
+    <li ref={ref} className="flex items-center">
       <Link
         to={`/users/${friend.userId}`}
-        className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
+        className="flex flex-1 items-center gap-3 px-4 py-3 transition-colors hover:bg-accent"
       >
         <div className="relative">
           <Avatar className="h-10 w-10">
@@ -39,10 +46,33 @@ function FriendListItem({
           <span className="text-sm font-medium">{friend.nickname}</span>
           <div className="flex items-center gap-1.5">
             {status === "IN_BATTLE" && <Swords className="h-4 w-4 text-amber-500" />}
-            <FriendActionButtons friend={friend} invalidateKey={invalidateKey} />
+            {!isFriend && <FriendActionButtons friend={friend} invalidateKey={invalidateKey} />}
           </div>
         </div>
       </Link>
+      {isFriend && (
+        <>
+          <div className="h-6 w-px bg-border" />
+          <div className="flex items-center gap-1.5 px-3">
+            <Badge variant="secondary" className="gap-1">
+              <UserCheck className="w-3 h-3" />
+              친구
+            </Badge>
+            <Button
+              size="sm"
+              onClick={() => {
+                if (!isLoggedIn) return requireLogin();
+                sendBattle(friend.userId);
+              }}
+              disabled={isSendingBattle}
+              className="gap-1 px-2 text-xs h-7"
+            >
+              <Swords className="h-3.5 w-3.5" />
+              대전 신청
+            </Button>
+          </div>
+        </>
+      )}
     </li>
   );
 }
