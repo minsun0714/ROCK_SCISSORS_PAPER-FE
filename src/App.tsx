@@ -1,6 +1,6 @@
 import { Toaster } from "sonner";
 import { Outlet } from "react-router-dom";
-import Header from "@/components/Header";
+import Header from "@/widgets/Header";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
 import { useNotifications } from "@/features/notification/hooks";
 import PresenceProvider from "@/features/presence/PresenceProvider";
