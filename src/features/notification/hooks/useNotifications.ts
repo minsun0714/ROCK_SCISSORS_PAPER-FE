@@ -7,6 +7,9 @@ export const NotificationEventType = {
   FRIEND_REQUEST_ACCEPTED: "FRIEND_REQUEST_ACCEPTED",
   FRIEND_REQUEST_REJECTED: "FRIEND_REQUEST_REJECTED",
   FRIEND_REQUEST_CANCELLED: "FRIEND_REQUEST_CANCELLED",
+  BATTLE_REQUESTED: "BATTLE_REQUESTED",
+  BATTLE_REQUEST_ACCEPTED: "BATTLE_REQUEST_ACCEPTED",
+  BATTLE_REQUEST_CANCELLED: "BATTLE_REQUEST_CANCELLED",
 } as const;
 
 export type NotificationEventType =
@@ -16,7 +19,7 @@ export type Notification = {
   id: string;
   type: NotificationEventType;
   message: string;
-  data?: FriendRequestNotificationData;
+  data?: NotificationData;
   createdAt: string;
 };
 
@@ -25,6 +28,21 @@ type FriendRequestNotificationData = {
   nickname: string;
   profileImageUrl: string | null;
 };
+
+export type BattleRequestNotificationData = {
+  requestId?: number | null;
+  id?: number | null;
+  battleRequestId?: number | null;
+  battleId?: string | number | null;
+  roomId?: string | number | null;
+  battleRoomId?: string | number | null;
+  senderId?: number | null;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  status?: string | null;
+};
+
+type NotificationData = FriendRequestNotificationData | BattleRequestNotificationData;
 
 export const useNotifications = (isLoggedIn: boolean) => {
   const queryClient = useQueryClient();
@@ -65,6 +83,20 @@ export const useNotifications = (isLoggedIn: boolean) => {
       invalidateFriendQueries(["myPendingRequests"]);
     });
 
+    eventSource.addEventListener(NotificationEventType.BATTLE_REQUESTED, (event: MessageEvent) => {
+      const data: BattleRequestNotificationData = JSON.parse(event.data);
+      const notification: Notification = {
+        id: crypto.randomUUID(),
+        type: NotificationEventType.BATTLE_REQUESTED,
+        message: `${data.nickname ?? "상대방"}님이 대전을 신청했습니다.`,
+        data,
+        createdAt: new Date().toISOString(),
+      };
+      setNotifications((prev) => [notification, ...prev]);
+      setHasUnread(true);
+      invalidateFriendQueries(["myFriends"]);
+    });
+
     eventSource.addEventListener(
       NotificationEventType.FRIEND_REQUEST_ACCEPTED,
       (event: MessageEvent) => {
@@ -79,6 +111,22 @@ export const useNotifications = (isLoggedIn: boolean) => {
         setNotifications((prev) => [notification, ...prev]);
         setHasUnread(true);
         invalidateFriendQueries(["myReceivedRequests"], ["myFriends"]);
+      },
+    );
+
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUEST_ACCEPTED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        const notification: Notification = {
+          id: crypto.randomUUID(),
+          type: NotificationEventType.BATTLE_REQUEST_ACCEPTED,
+          message: `${data.nickname ?? "상대방"}님이 대전방에 입장했습니다.`,
+          data,
+          createdAt: new Date().toISOString(),
+        };
+        setNotifications((prev) => [notification, ...prev]);
+        setHasUnread(true);
       },
     );
 
@@ -116,6 +164,24 @@ export const useNotifications = (isLoggedIn: boolean) => {
       },
     );
 
+    eventSource.addEventListener(
+      NotificationEventType.BATTLE_REQUEST_CANCELLED,
+      (event: MessageEvent) => {
+        const data: BattleRequestNotificationData = JSON.parse(event.data);
+        setNotifications((prev) =>
+          prev.filter(
+            (notification) =>
+              !(
+                notification.type === NotificationEventType.BATTLE_REQUESTED &&
+                notification.data &&
+                "requestId" in notification.data &&
+                notification.data.requestId === data.requestId
+              ),
+          ),
+        );
+      },
+    );
+
     // EventSource는 onerror 시 자동 재연결하므로 close() 호출하지 않음
 
     return () => {
@@ -125,10 +191,13 @@ export const useNotifications = (isLoggedIn: boolean) => {
   }, [isLoggedIn, queryClient]);
 
   const markAsRead = () => setHasUnread(false);
+  const dismissNotification = (notificationId: string) => {
+    setNotifications((prev) => prev.filter((notification) => notification.id !== notificationId));
+  };
   const clearAll = () => {
     setNotifications([]);
     setHasUnread(false);
   };
 
-  return { notifications, hasUnread, markAsRead, clearAll };
+  return { notifications, hasUnread, markAsRead, dismissNotification, clearAll };
 };

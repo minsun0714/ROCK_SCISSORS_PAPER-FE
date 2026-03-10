@@ -1,14 +1,14 @@
 import { Swords, UserCheck, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
 import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import FriendActionButtons from "@/features/friend/components/FriendActionButtons";
 import { usePresence } from "@/features/presence/hooks";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import type { FriendResponse } from "@/service/friendService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 
 function FriendListItem({
   friend,
@@ -62,7 +62,11 @@ function FriendListItem({
               size="sm"
               onClick={() => {
                 if (!isLoggedIn) return requireLogin();
-                sendBattle(friend.userId);
+                sendBattle({
+                  targetUserId: friend.userId,
+                  opponentNickname: friend.nickname,
+                  opponentProfileImageUrl: friend.profileImageUrl,
+                });
               }}
               disabled={isSendingBattle}
               className="gap-1 px-2 text-xs h-7"

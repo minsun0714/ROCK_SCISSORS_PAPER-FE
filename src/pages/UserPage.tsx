@@ -6,15 +6,19 @@ import { useOtherUserFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import { useMyProfileQuery, useUserProfileQuery } from "@/features/user/hooks";
 
-
 function UserPage() {
   const { userId } = useParams<{ userId: string }>();
   const { data: myProfile } = useMyProfileQuery();
   const { data: userProfile, isPending, isError } = useUserProfileQuery(userId!);
   const [friendKeyword, setFriendKeyword] = useState("");
 
-  const { userId: profileUserId, nickname, profileImageUrl, statusMessage, friendInfo } =
-    userProfile ?? {};
+  const {
+    userId: profileUserId,
+    nickname,
+    profileImageUrl,
+    statusMessage,
+    friendInfo,
+  } = userProfile ?? {};
 
   const {
     friends,
@@ -61,6 +65,8 @@ function UserPage() {
           targetUserId={profileUserId}
           friendStatus={friendInfo.status}
           friendRequestId={friendInfo.friendRequestId}
+          nickname={nickname ?? undefined}
+          profileImageUrl={profileImageUrl}
         />
       )}
 

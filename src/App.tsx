@@ -12,7 +12,8 @@ function App() {
   const isLoggedIn = !!myProfile;
 
   useHeartbeat(isLoggedIn);
-  const { notifications, hasUnread, markAsRead, clearAll } = useNotifications(isLoggedIn);
+  const { notifications, hasUnread, markAsRead, dismissNotification, clearAll } =
+    useNotifications(isLoggedIn);
 
   return (
     <PresenceProvider>
@@ -23,6 +24,7 @@ function App() {
           notifications={notifications}
           hasUnread={hasUnread}
           onOpenNotifications={markAsRead}
+          onDismissNotification={dismissNotification}
           onClearNotifications={clearAll}
           profileImageUrl={myProfile?.profileImageUrl}
         />

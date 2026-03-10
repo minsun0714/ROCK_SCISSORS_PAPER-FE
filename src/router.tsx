@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import BattleRoom from "@/pages/BattleRoom";
 import Callback from "@/pages/Callback";
 import Home from "@/pages/Home";
 import MyPage from "@/pages/MyPage";
@@ -23,6 +24,10 @@ const router = createBrowserRouter([
       {
         path: "users/:userId",
         element: <UserPage />,
+      },
+      {
+        path: "battles/:battleId",
+        element: <BattleRoom />,
       },
       {
         path: "oauth/callback",
