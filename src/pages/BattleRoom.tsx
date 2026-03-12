@@ -8,6 +8,7 @@ import BattleSidebar from "@/features/battle/components/BattleSidebar";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
 import { useMyProfileQuery } from "@/features/user/hooks";
+import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 
 const LOBBY_TIMEOUT = 5 * 60;
@@ -134,6 +135,18 @@ function BattleRoom() {
                     <p className="text-xs text-slate-400">
                       시간이 초과되면 자동으로 홈 화면으로 돌아갑니다
                     </p>
+                  </CardContent>
+                </Card>
+              ) : phase === "closed" ? (
+                <Card className="border border-white/60 bg-white/80 backdrop-blur">
+                  <CardContent className="flex flex-col items-center gap-4 py-8">
+                    <p className="font-display text-2xl text-slate-900">
+                      상대방이 퇴장했습니다
+                    </p>
+                    <p className="text-sm text-slate-500">대전이 종료되었습니다.</p>
+                    <Button onClick={() => navigate("/")} className="mt-2">
+                      홈으로 돌아가기
+                    </Button>
                   </CardContent>
                 </Card>
               ) : (

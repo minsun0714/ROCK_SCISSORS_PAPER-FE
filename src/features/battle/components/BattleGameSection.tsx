@@ -62,6 +62,7 @@ function BattleGameSection({
           {phase === "result" &&
             `${roundResult?.roundNumber ? `라운드 ${roundResult.roundNumber} ` : ""}결과`}
           {phase === "connecting" && "연결 중..."}
+          {phase === "closed" && "상대방이 퇴장했습니다"}
           {phase === "disconnected" && "연결이 끊어졌습니다"}
         </CardTitle>
       </CardHeader>

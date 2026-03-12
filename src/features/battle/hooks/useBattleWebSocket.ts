@@ -9,7 +9,7 @@ export type BattleMessage = {
   [key: string]: unknown;
 };
 
-type GamePhase = "connecting" | "lobby" | "waiting" | "playing" | "result" | "disconnected";
+type GamePhase = "connecting" | "lobby" | "waiting" | "playing" | "result" | "disconnected" | "closed";
 
 export type RoundResult = {
   myMove?: Move;
@@ -96,6 +96,8 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
             result,
             roundNumber: d.roundNumber as number | undefined,
           });
+        } else if (type === "ROOM_CLOSED") {
+          setPhase("closed");
         }
       } catch {
         console.log("[WS] Non-JSON message:", event.data);
@@ -105,7 +107,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
     ws.onclose = (event) => {
       if (cancelled) return;
       console.log("[WS] Disconnected:", event.code, event.reason);
-      setPhase("disconnected");
+      setPhase((prev) => (prev === "closed" ? prev : "disconnected"));
     };
 
     ws.onerror = (event) => {
