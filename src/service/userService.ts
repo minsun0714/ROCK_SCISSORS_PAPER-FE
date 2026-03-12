@@ -125,8 +125,9 @@ export const getBulkPresence = async (userIds: number[]) => {
 };
 
 export const getUserProfile = async (userId: string) => {
+  const hasToken = !!localStorage.getItem("accessToken");
   const { data } = await apiClient.get<UserProfileResponse>(`/users/${userId}`, {
-    authRequired: true,
+    authRequired: hasToken,
   });
 
   return data;

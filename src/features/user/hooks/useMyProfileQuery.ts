@@ -7,17 +7,26 @@ type UseMyProfileQueryOptions = {
   throwOnError?: boolean;
 };
 
+const safeGetMyProfile = async () => {
+  if (!localStorage.getItem("accessToken")) {
+    return null;
+  }
+
+  return getMyProfile();
+};
+
 export const useMyProfileQuery = ({ throwOnError = true }: UseMyProfileQueryOptions = {}) => {
-  const { data, isPending, isError, error, refetch } = useQuery({
+  const { data, isPending, isFetching, isError, error, refetch } = useQuery({
     queryKey: MY_PROFILE_QUERY_KEY,
-    queryFn: getMyProfile,
+    queryFn: safeGetMyProfile,
     retry: false,
     throwOnError,
   });
 
   return {
-    data,
+    data: data ?? undefined,
     isPending,
+    isFetching,
     isError,
     error,
     refetch,

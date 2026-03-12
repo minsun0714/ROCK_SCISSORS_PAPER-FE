@@ -8,7 +8,7 @@ import { useMyProfileQuery, useUserProfileQuery } from "@/features/user/hooks";
 
 function UserPage() {
   const { userId } = useParams<{ userId: string }>();
-  const { data: myProfile } = useMyProfileQuery();
+  const { data: myProfile } = useMyProfileQuery({ throwOnError: false });
   const { data: userProfile, isPending, isError } = useUserProfileQuery(userId!);
   const [friendKeyword, setFriendKeyword] = useState("");
 
