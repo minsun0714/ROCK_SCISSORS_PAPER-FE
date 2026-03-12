@@ -142,6 +142,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
 
     eventSource.addEventListener(NotificationEventType.BATTLE_REQUESTED, (event: MessageEvent) => {
       const data: BattleRequestNotificationData = JSON.parse(event.data);
+      console.log("[SSE] BATTLE_REQUESTED data:", data);
       const notification: Notification = {
         id: crypto.randomUUID(),
         type: NotificationEventType.BATTLE_REQUESTED,

@@ -108,6 +108,8 @@ function NotificationBell({
     const battleResponse = toBattleRequestResponse(data);
     const requestId = resolveBattleRequestId(battleResponse);
 
+    console.log("[Battle] accept - data:", data, "battleResponse:", battleResponse, "requestId:", requestId);
+
     if (!requestId) {
       return;
     }
@@ -179,15 +181,15 @@ function NotificationBell({
   return (
     <div className="relative" ref={panelRef}>
       <Button variant="ghost" size="icon" onClick={handleToggle} className="relative">
-        <Bell className="h-5 w-5" />
+        <Bell className="w-5 h-5" />
         {hasUnread && (
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-destructive" />
         )}
       </Button>
 
       {isOpen && (
-        <Card className="absolute right-0 mt-2 w-80 shadow-lg">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="absolute right-0 mt-2 shadow-lg w-80">
+          <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
             <CardTitle className="text-sm font-semibold">알림</CardTitle>
             {notifications.length > 0 && (
               <Button
@@ -200,9 +202,9 @@ function NotificationBell({
               </Button>
             )}
           </CardHeader>
-          <CardContent className="max-h-72 overflow-y-auto p-0">
+          <CardContent className="p-0 overflow-y-auto max-h-72">
             {notifications.length === 0 ? (
-              <p className="px-6 py-8 text-center text-sm text-muted-foreground">
+              <p className="px-6 py-8 text-sm text-center text-muted-foreground">
                 알림이 없습니다.
               </p>
             ) : (
@@ -214,28 +216,28 @@ function NotificationBell({
                     data && "requestId" in data ? (data.requestId as number) : null;
 
                   return (
-                    <li key={id} className="flex items-start gap-3 border-t px-4 py-3">
-                      <Avatar className="h-8 w-8 shrink-0">
+                    <li key={id} className="flex items-start gap-3 px-4 py-3 border-t">
+                      <Avatar className="w-8 h-8 shrink-0">
                         <AvatarImage src={data?.profileImageUrl?.toString() || undefined} />
                         <AvatarFallback>
-                          <UserRound className="h-5 w-5 text-muted-foreground" />
+                          <UserRound className="w-5 h-5 text-muted-foreground" />
                         </AvatarFallback>
                       </Avatar>
-                      <div className="min-w-0 flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="text-sm">{message}</p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           {new Date(createdAt).toLocaleString("ko-KR")}
                         </p>
                         {isFriendRequestNotification(notification) &&
                           friendRequestId != null && (
-                            <div className="mt-3 flex items-center gap-2">
+                            <div className="flex items-center gap-2 mt-3">
                               <Button
                                 size="xs"
                                 onClick={() => handleAcceptFriendRequest(id, friendRequestId)}
                                 disabled={isAcceptingFriend}
                                 className="gap-1"
                               >
-                                <Check className="h-3 w-3" />
+                                <Check className="w-3 h-3" />
                                 수락
                               </Button>
                               <Button
@@ -245,22 +247,21 @@ function NotificationBell({
                                 disabled={isRejectingFriend}
                                 className="gap-1"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="w-3 h-3" />
                                 거절
                               </Button>
                             </div>
                           )}
                         {isBattleRequestNotification(notification) &&
-                          battleData &&
-                          resolveBattleRequestId(toBattleRequestResponse(battleData)) != null && (
-                            <div className="mt-3 flex items-center gap-2">
+                          battleData && (
+                            <div className="flex items-center gap-2 mt-3">
                               <Button
                                 size="xs"
                                 onClick={() => handleAcceptBattleRequest(id, battleData)}
                                 disabled={isAcceptingBattleRequest}
                                 className="gap-1"
                               >
-                                <Check className="h-3 w-3" />
+                                <Check className="w-3 h-3" />
                                 수락
                               </Button>
                               <Button
@@ -270,7 +271,7 @@ function NotificationBell({
                                 disabled={isRejectingBattleRequest}
                                 className="gap-1"
                               >
-                                <X className="h-3 w-3" />
+                                <X className="w-3 h-3" />
                                 거절
                               </Button>
                             </div>
@@ -285,7 +286,7 @@ function NotificationBell({
                                 onClick={() => handleEnterBattleRoom(battleData)}
                                 className="gap-1"
                               >
-                                <Swords className="h-3 w-3" />방 보기
+                                <Swords className="w-3 h-3" />방 보기
                               </Button>
                             </div>
                           )}
