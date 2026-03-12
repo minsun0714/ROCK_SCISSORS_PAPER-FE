@@ -1,7 +1,4 @@
 import { Swords } from "lucide-react";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent } from "@/shared/components/ui/card";
 import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import {
@@ -10,12 +7,17 @@ import {
   useSendFriendRequestMutation,
 } from "@/features/friend/hooks";
 import type { FriendStatus } from "@/service/userService";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
+import { Card, CardContent } from "@/shared/components/ui/card";
 
 type FriendStatusSectionProps = {
   userId: string;
   targetUserId: number;
   friendStatus: FriendStatus;
   friendRequestId?: number | null;
+  nickname?: string;
+  profileImageUrl?: string | null;
 };
 
 function FriendStatusSection({
@@ -23,6 +25,8 @@ function FriendStatusSection({
   targetUserId,
   friendStatus,
   friendRequestId,
+  nickname,
+  profileImageUrl,
 }: FriendStatusSectionProps) {
   const { isLoggedIn, requireLogin } = useLoginModal();
   const { mutate: sendRequest, isPending: isSending } = useSendFriendRequestMutation(userId);
@@ -87,7 +91,11 @@ function FriendStatusSection({
               className="gap-1.5"
               onClick={() => {
                 if (!isLoggedIn) return requireLogin();
-                sendBattle(targetUserId);
+                sendBattle({
+                  targetUserId,
+                  opponentNickname: nickname,
+                  opponentProfileImageUrl: profileImageUrl,
+                });
               }}
               disabled={isSendingBattle}
             >

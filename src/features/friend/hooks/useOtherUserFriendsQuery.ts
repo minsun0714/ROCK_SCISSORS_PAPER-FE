@@ -12,6 +12,7 @@ export const useOtherUserFriendsQuery = (userId: number, keyword: string, size: 
       initialPageParam: 0,
       getNextPageParam: (lastPage) =>
         lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+      throwOnError: true,
     });
 
   const friends = data?.pages.flatMap((page) => page.content) ?? [];

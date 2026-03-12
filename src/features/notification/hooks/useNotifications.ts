@@ -23,18 +23,26 @@ type FriendRequestNotificationData = {
   requestId: number;
 };
 
-type BattleRequestNotificationData = {
-  senderId: number;
-  nickname: string;
-  profileImageUrl: string | null;
-  requestId: number;
+export type BattleRequestNotificationData = {
+  requestId?: number | null;
+  id?: number | null;
+  battleRequestId?: number | null;
+  battleId?: string | number | null;
+  roomId?: string | number | null;
+  battleRoomId?: string | number | null;
+  senderId?: number | null;
+  nickname?: string | null;
+  profileImageUrl?: string | null;
+  status?: string | null;
 };
+
+type NotificationData = FriendRequestNotificationData | BattleRequestNotificationData;
 
 export type Notification = {
   id: string;
   type: NotificationEventType;
   message: string;
-  data?: FriendRequestNotificationData | BattleRequestNotificationData;
+  data?: NotificationData;
   createdAt: string;
 };
 
@@ -132,21 +140,19 @@ export const useNotifications = (isLoggedIn: boolean) => {
 
     // ── 배틀 요청 ──
 
-    eventSource.addEventListener(
-      NotificationEventType.BATTLE_REQUESTED,
-      (event: MessageEvent) => {
-        const data: BattleRequestNotificationData = JSON.parse(event.data);
-        const notification: Notification = {
-          id: crypto.randomUUID(),
-          type: NotificationEventType.BATTLE_REQUESTED,
-          message: `${data.nickname}님이 대전을 신청했습니다.`,
-          data,
-          createdAt: new Date().toISOString(),
-        };
-        setNotifications((prev) => [notification, ...prev]);
-        setHasUnread(true);
-      },
-    );
+    eventSource.addEventListener(NotificationEventType.BATTLE_REQUESTED, (event: MessageEvent) => {
+      const data: BattleRequestNotificationData = JSON.parse(event.data);
+      const notification: Notification = {
+        id: crypto.randomUUID(),
+        type: NotificationEventType.BATTLE_REQUESTED,
+        message: `${data.nickname ?? "상대방"}님이 대전을 신청했습니다.`,
+        data,
+        createdAt: new Date().toISOString(),
+      };
+      setNotifications((prev) => [notification, ...prev]);
+      setHasUnread(true);
+      invalidateFriendQueries(["myFriends"]);
+    });
 
     eventSource.addEventListener(
       NotificationEventType.BATTLE_REQUEST_ACCEPTED,
@@ -155,7 +161,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
         const notification: Notification = {
           id: crypto.randomUUID(),
           type: NotificationEventType.BATTLE_REQUEST_ACCEPTED,
-          message: `${data.nickname}님이 대전을 수락했습니다.`,
+          message: `${data.nickname ?? "상대방"}님이 대전방에 입장했습니다.`,
           data,
           createdAt: new Date().toISOString(),
         };
@@ -171,7 +177,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
         const notification: Notification = {
           id: crypto.randomUUID(),
           type: NotificationEventType.BATTLE_REQUEST_REJECTED,
-          message: `${data.nickname}님이 대전을 거절했습니다.`,
+          message: `${data.nickname ?? "상대방"}님이 대전을 거절했습니다.`,
           data,
           createdAt: new Date().toISOString(),
         };
@@ -186,10 +192,12 @@ export const useNotifications = (isLoggedIn: boolean) => {
         const data: BattleRequestNotificationData = JSON.parse(event.data);
         setNotifications((prev) =>
           prev.filter(
-            (n) =>
+            (notification) =>
               !(
-                n.type === NotificationEventType.BATTLE_REQUESTED &&
-                n.data?.senderId === data.senderId
+                notification.type === NotificationEventType.BATTLE_REQUESTED &&
+                notification.data &&
+                "requestId" in notification.data &&
+                notification.data.requestId === data.requestId
               ),
           ),
         );
@@ -205,10 +213,13 @@ export const useNotifications = (isLoggedIn: boolean) => {
   }, [isLoggedIn, queryClient]);
 
   const markAsRead = () => setHasUnread(false);
+  const dismissNotification = (notificationId: string) => {
+    setNotifications((prev) => prev.filter((notification) => notification.id !== notificationId));
+  };
   const clearAll = () => {
     setNotifications([]);
     setHasUnread(false);
   };
 
-  return { notifications, hasUnread, markAsRead, clearAll };
+  return { notifications, hasUnread, markAsRead, dismissNotification, clearAll };
 };

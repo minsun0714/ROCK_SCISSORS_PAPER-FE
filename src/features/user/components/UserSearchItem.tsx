@@ -1,13 +1,13 @@
 import { Swords, UserCheck, UserRound } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
-import { Badge } from "@/shared/components/ui/badge";
-import { Button } from "@/shared/components/ui/button";
 import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import { usePresence } from "@/features/presence/hooks";
 import { presenceColorClass } from "@/features/presence/presenceColorClass";
 import type { UserSearchResponse } from "@/service/userService";
+import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
+import { Badge } from "@/shared/components/ui/badge";
+import { Button } from "@/shared/components/ui/button";
 
 function UserSearchItem({ user }: { user: UserSearchResponse }) {
   const { ref, presenceStatus } = usePresence<HTMLLIElement>(user.userId);
@@ -49,7 +49,11 @@ function UserSearchItem({ user }: { user: UserSearchResponse }) {
               size="sm"
               onClick={() => {
                 if (!isLoggedIn) return requireLogin();
-                sendBattle(user.userId);
+                sendBattle({
+                  targetUserId: user.userId,
+                  opponentNickname: user.nickname,
+                  opponentProfileImageUrl: user.profileImageUrl,
+                });
               }}
               disabled={isSendingBattle}
               className="gap-1 px-2 text-xs h-7"

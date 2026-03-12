@@ -1,14 +1,24 @@
-import { Bell, UserRound } from "lucide-react";
+import { Bell, Check, Swords, UserRound, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import {
-  type Notification,
-  NotificationEventType,
-} from "@/features/notification/hooks";
-import { useAcceptBattleRequestMutation, useRejectBattleRequestMutation } from "@/features/battle/hooks";
+import { useNavigate } from "react-router-dom";
+import { useAcceptBattleRequestMutation } from "@/features/battle/hooks";
+import { useRejectBattleRequestMutation } from "@/features/battle/hooks";
+import { type BattleRouteState } from "@/features/battle/types";
 import {
   useAcceptFriendRequestMutation,
   useRejectFriendRequestMutation,
 } from "@/features/friend/hooks";
+import {
+  type BattleRequestNotificationData,
+  type Notification,
+  NotificationEventType,
+} from "@/features/notification/hooks";
+import {
+  type BattleRequestResponse,
+  resolveBattleId,
+  resolveBattleRequestId,
+  resolveBattleStatus,
+} from "@/service/battleService";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/components/ui/card";
@@ -17,24 +27,62 @@ function NotificationBell({
   notifications,
   hasUnread,
   onOpen,
+  onDismissNotification,
   onClearAll,
 }: {
   notifications: Notification[];
   hasUnread: boolean;
   onOpen: () => void;
+  onDismissNotification: (notificationId: string) => void;
   onClearAll: () => void;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
-
+  const navigate = useNavigate();
+  const { mutate: acceptBattleRequest, isPending: isAcceptingBattleRequest } =
+    useAcceptBattleRequestMutation();
+  const { mutate: rejectBattleRequestMutate, isPending: isRejectingBattleRequest } =
+    useRejectBattleRequestMutation();
   const { mutate: acceptFriend, isPending: isAcceptingFriend } =
     useAcceptFriendRequestMutation("notifications");
   const { mutate: rejectFriend, isPending: isRejectingFriend } =
     useRejectFriendRequestMutation("notifications");
-  const { mutate: acceptBattle, isPending: isAcceptingBattle } =
-    useAcceptBattleRequestMutation();
-  const { mutate: rejectBattle, isPending: isRejectingBattle } =
-    useRejectBattleRequestMutation();
+
+  const isBattleRequestNotification = (notification: Notification) =>
+    notification.type === NotificationEventType.BATTLE_REQUESTED;
+
+  const isFriendRequestNotification = (notification: Notification) =>
+    notification.type === NotificationEventType.FRIEND_REQUESTED;
+
+  const toBattleRouteState = (data: BattleRequestNotificationData): BattleRouteState => ({
+    role: "creator",
+    battleStatus: resolveBattleStatus(toBattleRequestResponse(data)),
+    requestId: resolveBattleRequestId(toBattleRequestResponse(data)),
+    opponent: {
+      userId: data.senderId ?? undefined,
+      nickname: data.nickname ?? undefined,
+      profileImageUrl: data.profileImageUrl ?? null,
+    },
+  });
+
+  const toBattleRequestResponse = (
+    data?: BattleRequestNotificationData,
+  ): BattleRequestResponse | null => {
+    if (!data) {
+      return null;
+    }
+
+    return {
+      requestId: data.requestId ?? undefined,
+      id: data.id ?? undefined,
+      battleRequestId: data.battleRequestId ?? undefined,
+      battleId: data.battleId ?? undefined,
+      roomId: data.roomId ?? undefined,
+      battleRoomId: data.battleRoomId ?? undefined,
+      status: data.status ?? undefined,
+      battleStatus: data.status ?? undefined,
+    };
+  };
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -51,6 +99,81 @@ function NotificationBell({
     const next = !isOpen;
     setIsOpen(next);
     if (next) onOpen();
+  };
+
+  const handleAcceptBattleRequest = (
+    notificationId: string,
+    data: BattleRequestNotificationData,
+  ) => {
+    const battleResponse = toBattleRequestResponse(data);
+    const requestId = resolveBattleRequestId(battleResponse);
+
+    if (!requestId) {
+      return;
+    }
+
+    acceptBattleRequest(
+      {
+        requestId,
+        battleId: resolveBattleId(battleResponse),
+        opponentUserId: data.senderId ?? undefined,
+        opponentNickname: data.nickname ?? undefined,
+        opponentProfileImageUrl: data.profileImageUrl ?? null,
+      },
+      {
+        onSuccess: () => {
+          onDismissNotification(notificationId);
+          setIsOpen(false);
+        },
+      },
+    );
+  };
+
+  const handleRejectBattleRequest = (
+    notificationId: string,
+    data: BattleRequestNotificationData,
+  ) => {
+    const battleResponse = toBattleRequestResponse(data);
+    const requestId = resolveBattleRequestId(battleResponse);
+
+    if (!requestId) {
+      return;
+    }
+
+    rejectBattleRequestMutate(requestId, {
+      onSuccess: () => {
+        onDismissNotification(notificationId);
+      },
+    });
+  };
+
+  const handleAcceptFriendRequest = (notificationId: string, requestId: number) => {
+    acceptFriend(requestId, {
+      onSuccess: () => {
+        onDismissNotification(notificationId);
+      },
+    });
+  };
+
+  const handleRejectFriendRequest = (notificationId: string, requestId: number) => {
+    rejectFriend(requestId, {
+      onSuccess: () => {
+        onDismissNotification(notificationId);
+      },
+    });
+  };
+
+  const handleEnterBattleRoom = (data: BattleRequestNotificationData) => {
+    const battleId = resolveBattleId(toBattleRequestResponse(data));
+
+    if (!battleId) {
+      return;
+    }
+
+    navigate(`/battles/${battleId}`, {
+      state: toBattleRouteState(data),
+    });
+    setIsOpen(false);
   };
 
   return (
@@ -84,116 +207,98 @@ function NotificationBell({
               </p>
             ) : (
               <ul>
-                {notifications.map((notification) => (
-                  <NotificationItem
-                    key={notification.id}
-                    notification={notification}
-                    onAcceptFriend={acceptFriend}
-                    onRejectFriend={rejectFriend}
-                    isAcceptingFriend={isAcceptingFriend}
-                    isRejectingFriend={isRejectingFriend}
-                    onAcceptBattle={acceptBattle}
-                    onRejectBattle={rejectBattle}
-                    isAcceptingBattle={isAcceptingBattle}
-                    isRejectingBattle={isRejectingBattle}
-                  />
-                ))}
+                {notifications.map((notification: Notification) => {
+                  const { id, data, message, createdAt, type } = notification;
+                  const battleData = data as BattleRequestNotificationData | undefined;
+                  const friendRequestId =
+                    data && "requestId" in data ? (data.requestId as number) : null;
+
+                  return (
+                    <li key={id} className="flex items-start gap-3 border-t px-4 py-3">
+                      <Avatar className="h-8 w-8 shrink-0">
+                        <AvatarImage src={data?.profileImageUrl?.toString() || undefined} />
+                        <AvatarFallback>
+                          <UserRound className="h-5 w-5 text-muted-foreground" />
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm">{message}</p>
+                        <p className="mt-0.5 text-xs text-muted-foreground">
+                          {new Date(createdAt).toLocaleString("ko-KR")}
+                        </p>
+                        {isFriendRequestNotification(notification) &&
+                          friendRequestId != null && (
+                            <div className="mt-3 flex items-center gap-2">
+                              <Button
+                                size="xs"
+                                onClick={() => handleAcceptFriendRequest(id, friendRequestId)}
+                                disabled={isAcceptingFriend}
+                                className="gap-1"
+                              >
+                                <Check className="h-3 w-3" />
+                                수락
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="xs"
+                                onClick={() => handleRejectFriendRequest(id, friendRequestId)}
+                                disabled={isRejectingFriend}
+                                className="gap-1"
+                              >
+                                <X className="h-3 w-3" />
+                                거절
+                              </Button>
+                            </div>
+                          )}
+                        {isBattleRequestNotification(notification) &&
+                          battleData &&
+                          resolveBattleRequestId(toBattleRequestResponse(battleData)) != null && (
+                            <div className="mt-3 flex items-center gap-2">
+                              <Button
+                                size="xs"
+                                onClick={() => handleAcceptBattleRequest(id, battleData)}
+                                disabled={isAcceptingBattleRequest}
+                                className="gap-1"
+                              >
+                                <Check className="h-3 w-3" />
+                                수락
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="xs"
+                                onClick={() => handleRejectBattleRequest(id, battleData)}
+                                disabled={isRejectingBattleRequest}
+                                className="gap-1"
+                              >
+                                <X className="h-3 w-3" />
+                                거절
+                              </Button>
+                            </div>
+                          )}
+                        {type === NotificationEventType.BATTLE_REQUEST_ACCEPTED &&
+                          battleData &&
+                          resolveBattleId(toBattleRequestResponse(battleData)) && (
+                            <div className="mt-3">
+                              <Button
+                                variant="secondary"
+                                size="xs"
+                                onClick={() => handleEnterBattleRoom(battleData)}
+                                className="gap-1"
+                              >
+                                <Swords className="h-3 w-3" />방 보기
+                              </Button>
+                            </div>
+                          )}
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </CardContent>
         </Card>
       )}
     </div>
-  );
-}
-
-function NotificationItem({
-  notification,
-  onAcceptFriend,
-  onRejectFriend,
-  isAcceptingFriend,
-  isRejectingFriend,
-  onAcceptBattle,
-  onRejectBattle,
-  isAcceptingBattle,
-  isRejectingBattle,
-}: {
-  notification: Notification;
-  onAcceptFriend: (requestId: number) => void;
-  onRejectFriend: (requestId: number) => void;
-  isAcceptingFriend: boolean;
-  isRejectingFriend: boolean;
-  onAcceptBattle: (requestId: number) => void;
-  onRejectBattle: (requestId: number) => void;
-  isAcceptingBattle: boolean;
-  isRejectingBattle: boolean;
-}) {
-  const { type, data, message, createdAt } = notification;
-  const requestId = data && "requestId" in data ? data.requestId : null;
-  const showFriendActions =
-    type === NotificationEventType.FRIEND_REQUESTED && requestId != null;
-  const showBattleActions =
-    type === NotificationEventType.BATTLE_REQUESTED && requestId != null;
-
-  return (
-    <li className="border-t px-4 py-3">
-      <div className="flex items-start gap-3">
-        <Avatar className="h-8 w-8 shrink-0">
-          <AvatarImage src={data?.profileImageUrl?.toString() || undefined} />
-          <AvatarFallback>
-            <UserRound className="h-5 w-5 text-muted-foreground" />
-          </AvatarFallback>
-        </Avatar>
-        <div className="min-w-0">
-          <p className="text-sm">{message}</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            {new Date(createdAt).toLocaleString("ko-KR")}
-          </p>
-        </div>
-      </div>
-      {showFriendActions && (
-        <div className="mt-2 flex gap-2">
-          <Button
-            size="sm"
-            onClick={() => onAcceptFriend(requestId)}
-            disabled={isAcceptingFriend}
-            className="h-7 flex-1 text-xs"
-          >
-            {isAcceptingFriend ? "수락 중..." : "수락"}
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onRejectFriend(requestId)}
-            disabled={isRejectingFriend}
-            className="h-7 flex-1 text-xs"
-          >
-            {isRejectingFriend ? "거절 중..." : "거절"}
-          </Button>
-        </div>
-      )}
-      {showBattleActions && (
-        <div className="mt-2 flex gap-2">
-          <Button
-            size="sm"
-            onClick={() => onAcceptBattle(requestId)}
-            disabled={isAcceptingBattle}
-            className="h-7 flex-1 text-xs"
-          >
-            {isAcceptingBattle ? "수락 중..." : "수락"}
-          </Button>
-          <Button
-            variant="destructive"
-            size="sm"
-            onClick={() => onRejectBattle(requestId)}
-            disabled={isRejectingBattle}
-            className="h-7 flex-1 text-xs"
-          >
-            {isRejectingBattle ? "거절 중..." : "거절"}
-          </Button>
-        </div>
-      )}
-    </li>
   );
 }
 

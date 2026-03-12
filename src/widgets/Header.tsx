@@ -11,6 +11,7 @@ type HeaderProps = {
   notifications: Notification[];
   hasUnread: boolean;
   onOpenNotifications: () => void;
+  onDismissNotification: (notificationId: string) => void;
   onClearNotifications: () => void;
   profileImageUrl?: string | null;
 };
@@ -21,6 +22,7 @@ function Header({
   notifications,
   hasUnread,
   onOpenNotifications,
+  onDismissNotification,
   onClearNotifications,
   profileImageUrl,
 }: HeaderProps) {
@@ -36,6 +38,7 @@ function Header({
               notifications={notifications}
               hasUnread={hasUnread}
               onOpen={onOpenNotifications}
+              onDismissNotification={onDismissNotification}
               onClearAll={onClearNotifications}
             />
             <ProfileDropdown profileImageUrl={profileImageUrl} />

@@ -1,5 +1,4 @@
 import { Swords, UserCheck, UserPlus } from "lucide-react";
-import { Button } from "@/shared/components/ui/button";
 import { useLoginModal } from "@/features/auth/hooks";
 import { useSendBattleRequestMutation } from "@/features/battle/hooks";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/features/friend/hooks";
 import { useMyProfileQuery } from "@/features/user/hooks";
 import type { FriendResponse } from "@/service/friendService";
+import { Button } from "@/shared/components/ui/button";
 
 function FriendActionButtons({
   friend,
@@ -44,7 +44,11 @@ function FriendActionButtons({
           onClick={(e) => {
             e.preventDefault();
             if (!isLoggedIn) return requireLogin();
-            sendBattle(userId);
+            sendBattle({
+              targetUserId: userId,
+              opponentNickname: friend.nickname,
+              opponentProfileImageUrl: friend.profileImageUrl,
+            });
           }}
           disabled={isSendingBattle}
           className="h-7 gap-1 px-2 text-xs"

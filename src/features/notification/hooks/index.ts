@@ -1,4 +1,5 @@
 export {
+  type BattleRequestNotificationData,
   type Notification,
   NotificationEventType,
 } from "@/features/notification/hooks/useNotifications";
