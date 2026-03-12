@@ -9,7 +9,7 @@ export type BattleMessage = {
   [key: string]: unknown;
 };
 
-type GamePhase = "connecting" | "waiting" | "playing" | "result" | "disconnected";
+type GamePhase = "connecting" | "lobby" | "waiting" | "playing" | "result" | "disconnected";
 
 export type RoundResult = {
   myMove?: Move;
@@ -48,7 +48,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
 
       wsRef.current = ws;
       console.log("[WS] Connected to battle room:", roomId);
-      setPhase("playing");
+      setPhase("lobby");
     };
 
     ws.onmessage = (event) => {

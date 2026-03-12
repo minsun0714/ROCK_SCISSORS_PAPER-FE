@@ -1,4 +1,5 @@
 import { toast } from "sonner";
+import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BattleGameSection from "@/features/battle/components/BattleGameSection";
 import BattleHeroSection from "@/features/battle/components/BattleHeroSection";
@@ -9,9 +10,17 @@ import type { BattleRouteState } from "@/features/battle/types";
 import { useMyProfileQuery } from "@/features/user/hooks";
 import { Card, CardContent } from "@/shared/components/ui/card";
 
+const LOBBY_TIMEOUT = 5 * 60;
+
 const waitingSteps = ["대전방 생성 완료", "상대에게 초대 알림 전송", "상대 입장 대기"];
 
 const joinedSteps = ["대전방 생성 완료", "초대 수락 완료", "양쪽 플레이어 입장"];
+
+const formatTime = (seconds: number) => {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, "0")}`;
+};
 
 function BattleRoom() {
   const { battleId } = useParams<{ battleId: string }>();
@@ -30,7 +39,40 @@ function BattleRoom() {
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
 
   const { phase, myMove, roundResult, sendMove, sendRetry } =
-    useBattleWebSocket(battleId, myProfile?.userId);
+    useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
+
+  const isLobby = phase === "connecting" || phase === "lobby";
+
+  const [remainingSeconds, setRemainingSeconds] = useState(LOBBY_TIMEOUT);
+
+  useEffect(() => {
+    if (!isLobby) return;
+
+    setRemainingSeconds(LOBBY_TIMEOUT);
+
+    const interval = setInterval(() => {
+      setRemainingSeconds((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isLobby]);
+
+  const handleTimeout = useCallback(() => {
+    toast.error("대기 시간이 초과되었습니다.");
+    navigate("/");
+  }, [navigate]);
+
+  useEffect(() => {
+    if (isLobby && remainingSeconds === 0) {
+      handleTimeout();
+    }
+  }, [isLobby, remainingSeconds, handleTimeout]);
 
   const handleCopyRoomLink = async () => {
     if (!battleId) {
@@ -74,13 +116,35 @@ function BattleRoom() {
                 opponent={opponent}
               />
 
-              <BattleGameSection
-                phase={phase}
-                myMove={myMove}
-                roundResult={roundResult}
-                onSelectMove={sendMove}
-                onRetry={sendRetry}
-              />
+              {isLobby ? (
+                <Card className="border border-white/60 bg-white/80 backdrop-blur">
+                  <CardContent className="flex flex-col items-center gap-4 py-8">
+                    <p className="text-sm text-slate-500">상대방 입장을 기다리는 중...</p>
+                    <p className="font-display text-4xl tabular-nums tracking-tight text-slate-900">
+                      {formatTime(remainingSeconds)}
+                    </p>
+                    <div className="h-2 w-48 overflow-hidden rounded-full bg-slate-100">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all duration-1000"
+                        style={{
+                          width: `${(remainingSeconds / LOBBY_TIMEOUT) * 100}%`,
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-slate-400">
+                      시간이 초과되면 자동으로 홈 화면으로 돌아갑니다
+                    </p>
+                  </CardContent>
+                </Card>
+              ) : (
+                <BattleGameSection
+                  phase={phase}
+                  myMove={myMove}
+                  roundResult={roundResult}
+                  onSelectMove={sendMove}
+                  onRetry={sendRetry}
+                />
+              )}
             </div>
 
             <BattleSidebar
