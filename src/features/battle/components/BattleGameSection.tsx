@@ -12,9 +12,12 @@ type BattleGameSectionProps = {
     result?: string;
     roundNumber?: number;
   } | null;
+  moveTimer: number | null;
   onSelectMove: (move: Move) => void;
   onRetry: () => void;
 };
+
+const MOVE_TIMEOUT = 30;
 
 const MOVES: { value: Move; label: string; icon: React.ReactNode }[] = [
   {
@@ -50,6 +53,7 @@ function BattleGameSection({
   phase,
   myMove,
   roundResult,
+  moveTimer,
   onSelectMove,
   onRetry,
 }: BattleGameSectionProps) {
@@ -65,6 +69,22 @@ function BattleGameSection({
           {phase === "closed" && "상대방이 퇴장했습니다"}
           {phase === "disconnected" && "연결이 끊어졌습니다"}
         </CardTitle>
+
+        {moveTimer != null && (phase === "playing" || phase === "waiting") && (
+          <div className="mx-auto mt-3 flex flex-col items-center gap-2">
+            <p
+              className={`font-display text-3xl tabular-nums ${moveTimer <= 10 ? "text-red-500" : "text-slate-900"}`}
+            >
+              {moveTimer}초
+            </p>
+            <div className="h-1.5 w-36 overflow-hidden rounded-full bg-slate-100">
+              <div
+                className={`h-full rounded-full transition-all duration-1000 ${moveTimer <= 10 ? "bg-red-500" : "bg-primary"}`}
+                style={{ width: `${(moveTimer / MOVE_TIMEOUT) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
       </CardHeader>
 
       <CardContent>

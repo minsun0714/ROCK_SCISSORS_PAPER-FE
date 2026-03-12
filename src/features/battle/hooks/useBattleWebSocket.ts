@@ -28,6 +28,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
   const [messages, setMessages] = useState<BattleMessage[]>([]);
   const [roundResult, setRoundResult] = useState<RoundResult | null>(null);
   const [myMove, setMyMove] = useState<Move | null>(null);
+  const [closedMessage, setClosedMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!roomId) return;
@@ -97,6 +98,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
             roundNumber: d.roundNumber as number | undefined,
           });
         } else if (type === "ROOM_CLOSED") {
+          setClosedMessage((msg.data as string) ?? "대전이 종료되었습니다.");
           setPhase("closed");
         }
       } catch {
@@ -146,6 +148,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
     messages,
     myMove,
     roundResult,
+    closedMessage,
     sendMove,
     sendRetry,
   };

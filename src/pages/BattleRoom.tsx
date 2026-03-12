@@ -12,6 +12,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
 
 const LOBBY_TIMEOUT = 5 * 60;
+const MOVE_TIMEOUT = 30;
 
 const waitingSteps = ["대전방 생성 완료", "상대에게 초대 알림 전송", "상대 입장 대기"];
 
@@ -39,17 +40,30 @@ function BattleRoom() {
   const statusLabel = role === "invitee" ? "양측 준비 완료" : "수락 대기 중";
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
 
-  const { phase, myMove, roundResult, sendMove, sendRetry } =
+  const { phase, myMove, roundResult, closedMessage, sendMove, sendRetry } =
     useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
 
   const isLobby = phase === "connecting" || phase === "lobby";
 
-  const [remainingSeconds, setRemainingSeconds] = useState(LOBBY_TIMEOUT);
+  const getInitialRemaining = useCallback(() => {
+    if (!battleId) return LOBBY_TIMEOUT;
+    const key = `battle_lobby_start_${battleId}`;
+    const saved = sessionStorage.getItem(key);
+    if (saved) {
+      const elapsed = Math.floor((Date.now() - Number(saved)) / 1000);
+      return Math.max(0, LOBBY_TIMEOUT - elapsed);
+    }
+    sessionStorage.setItem(key, String(Date.now()));
+    return LOBBY_TIMEOUT;
+  }, [battleId]);
+
+  const [remainingSeconds, setRemainingSeconds] = useState(getInitialRemaining);
 
   useEffect(() => {
-    if (!isLobby) return;
-
-    setRemainingSeconds(LOBBY_TIMEOUT);
+    if (!isLobby) {
+      if (battleId) sessionStorage.removeItem(`battle_lobby_start_${battleId}`);
+      return;
+    }
 
     const interval = setInterval(() => {
       setRemainingSeconds((prev) => {
@@ -62,7 +76,7 @@ function BattleRoom() {
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isLobby]);
+  }, [isLobby, battleId]);
 
   const handleTimeout = useCallback(() => {
     toast.error("대기 시간이 초과되었습니다.");
@@ -74,6 +88,44 @@ function BattleRoom() {
       handleTimeout();
     }
   }, [isLobby, remainingSeconds, handleTimeout]);
+
+  const isMovePhase = phase === "playing" || phase === "waiting";
+  const moveTimerKey = battleId ? `battle_move_start_${battleId}` : null;
+
+  const getInitialMoveRemaining = useCallback(() => {
+    if (!moveTimerKey) return MOVE_TIMEOUT;
+    const saved = sessionStorage.getItem(moveTimerKey);
+    if (saved) {
+      const elapsed = Math.floor((Date.now() - Number(saved)) / 1000);
+      return Math.max(0, MOVE_TIMEOUT - elapsed);
+    }
+    sessionStorage.setItem(moveTimerKey, String(Date.now()));
+    return MOVE_TIMEOUT;
+  }, [moveTimerKey]);
+
+  const [moveSeconds, setMoveSeconds] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!isMovePhase) {
+      if (moveTimerKey) sessionStorage.removeItem(moveTimerKey);
+      setMoveSeconds(null);
+      return;
+    }
+
+    setMoveSeconds(getInitialMoveRemaining());
+
+    const interval = setInterval(() => {
+      setMoveSeconds((prev) => {
+        if (prev == null || prev <= 1) {
+          clearInterval(interval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isMovePhase, moveTimerKey, getInitialMoveRemaining]);
 
   const handleCopyRoomLink = async () => {
     if (!battleId) {
@@ -141,9 +193,8 @@ function BattleRoom() {
                 <Card className="border border-white/60 bg-white/80 backdrop-blur">
                   <CardContent className="flex flex-col items-center gap-4 py-8">
                     <p className="font-display text-2xl text-slate-900">
-                      상대방이 퇴장했습니다
+                      {closedMessage ?? "대전이 종료되었습니다."}
                     </p>
-                    <p className="text-sm text-slate-500">대전이 종료되었습니다.</p>
                     <Button onClick={() => navigate("/")} className="mt-2">
                       홈으로 돌아가기
                     </Button>
@@ -154,6 +205,7 @@ function BattleRoom() {
                   phase={phase}
                   myMove={myMove}
                   roundResult={roundResult}
+                  moveTimer={moveSeconds}
                   onSelectMove={sendMove}
                   onRetry={sendRetry}
                 />
