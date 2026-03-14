@@ -1,19 +1,4 @@
-import type { BattleResult, BattleRoundHistoryResponse } from "@/service/battleHistoryService";
-
-const WIN_MAP: Record<string, string> = {
-  ROCK: "SCISSORS",
-  SCISSORS: "PAPER",
-  PAPER: "ROCK",
-};
-
-export const deriveResult = (round: BattleRoundHistoryResponse): BattleResult => {
-  if (!round.myMove && !round.opponentMove) return "DRAW";
-  if (!round.opponentMove) return "WIN";
-  if (!round.myMove) return "LOSE";
-  if (round.myMove === round.opponentMove) return "DRAW";
-  if (WIN_MAP[round.myMove] === round.opponentMove) return "WIN";
-  return "LOSE";
-};
+import type { BattleResult } from "@/service/battleHistoryService";
 
 export const moveLabel: Record<string, string> = {
   ROCK: "바위",

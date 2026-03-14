@@ -14,8 +14,9 @@ export type BattleRoundHistoryResponse = {
   opponentId: number;
   nickname: string;
   profileImageUrl: string | null;
-  myMove: string;
-  opponentMove: string;
+  myMove: string | null;
+  opponentMove: string | null;
+  battleResult: BattleResult;
   playedAt: string;
 };
 

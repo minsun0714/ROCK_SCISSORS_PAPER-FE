@@ -1,15 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Badge } from "@/shared/components/ui/badge";
 import type { BattleRoundHistoryResponse } from "@/service/battleHistoryService";
-import { deriveResult, moveEmoji, resultBadge } from "@/features/battle/utils/battleResult";
+import { moveEmoji, resultBadge } from "@/features/battle/utils/battleResult";
 
 type BattleHistoryItemProps = {
   round: BattleRoundHistoryResponse;
 };
 
 function BattleHistoryItem({ round }: BattleHistoryItemProps) {
-  const result = deriveResult(round);
-  const badge = resultBadge[result];
+  const badge = resultBadge[round.battleResult];
   const myEmoji = round.myMove ? moveEmoji[round.myMove] : "❓";
   const opponentEmoji = round.opponentMove ? moveEmoji[round.opponentMove] : "❓";
   const date = new Date(round.playedAt).toLocaleDateString("ko-KR");
