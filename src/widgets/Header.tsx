@@ -27,10 +27,11 @@ function Header({
   profileImageUrl,
 }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-10 border-b bg-background shadow-sm">
-      <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3">
-        <Link to="/" className="font-display text-xl tracking-tight text-primary no-underline">
-          RSP
+    <header className="sticky top-0 z-10 border-b shadow-sm bg-background">
+      <div className="flex items-center justify-between w-full max-w-3xl px-4 py-3 mx-auto">
+        <Link to="/" className="flex items-center gap-2 no-underline">
+          <img src="/logo.svg" alt="RSP" className="w-8 h-8" />
+          <span className="text-xl tracking-tight font-display text-primary">RPS</span>
         </Link>
         {isPending ? null : isLoggedIn ? (
           <div className="flex items-center gap-3">
