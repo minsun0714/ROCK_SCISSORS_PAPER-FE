@@ -1,4 +1,4 @@
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { keepPreviousData, useInfiniteQuery } from "@tanstack/react-query";
 import type { BattleResult } from "@/service/battleHistoryService";
 import { getMyBattleHistory, getOtherBattleHistory } from "@/service/battleHistoryService";
 
@@ -12,6 +12,7 @@ export const useMyBattleHistoryQuery = (
     queryFn: ({ pageParam = 0 }) => getMyBattleHistory(keyword, battleResult, pageParam, size),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+    placeholderData: keepPreviousData,
     enabled: !!localStorage.getItem("accessToken"),
     retry: false,
   });
@@ -28,6 +29,7 @@ export const useUserBattleHistoryQuery = (
     queryFn: ({ pageParam = 0 }) => getOtherBattleHistory(userId, keyword, battleResult, pageParam, size),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+    placeholderData: keepPreviousData,
     enabled: !!localStorage.getItem("accessToken"),
     retry: false,
   });
