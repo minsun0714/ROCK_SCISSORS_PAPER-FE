@@ -4,10 +4,11 @@ import type { BattleRouteState } from "@/features/battle/types";
 type BattleProgressBarProps = {
   role: BattleRouteState["role"] | undefined;
   steps: string[];
+  isGameStarted: boolean;
 };
 
-function BattleProgressBar({ role, steps }: BattleProgressBarProps) {
-  const completedCount = role === "invitee" ? steps.length : 2;
+function BattleProgressBar({ role, steps, isGameStarted }: BattleProgressBarProps) {
+  const completedCount = isGameStarted || role === "invitee" ? steps.length : 2;
 
   return (
     <div className="flex items-center gap-2">

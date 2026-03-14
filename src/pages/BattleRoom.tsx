@@ -33,18 +33,29 @@ function BattleRoom() {
   const routeState = location.state as BattleRouteState | null;
   const role = routeState?.role;
   const opponent = routeState?.opponent;
-  const pageTitle = role === "invitee" ? "대전방에 입장했습니다" : "대전방이 열렸습니다";
-  const pageDescription =
-    role === "invitee"
-      ? `${opponent?.nickname ?? "상대방"}님과 바로 대기 상태에 들어갔습니다.`
-      : `${opponent?.nickname ?? "상대방"}님의 수락을 기다리는 중입니다.`;
-  const statusLabel = role === "invitee" ? "양측 준비 완료" : "수락 대기 중";
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
 
   const { phase, myMove, roundResult, closedMessage, sendMove, sendRetry } =
     useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
 
   const isLobby = phase === "connecting" || phase === "lobby";
+
+  const opponentName = opponent?.nickname ?? "상대방";
+  const pageTitle = isLobby
+    ? role === "invitee"
+      ? "대전방에 입장했습니다"
+      : "대전방이 열렸습니다"
+    : "대전이 시작되었습니다";
+  const pageDescription = isLobby
+    ? role === "invitee"
+      ? `${opponentName}님과 바로 대기 상태에 들어갔습니다.`
+      : `${opponentName}님의 수락을 기다리는 중입니다.`
+    : `${opponentName}님과 대전 중입니다.`;
+  const statusLabel = isLobby
+    ? role === "invitee"
+      ? "양측 준비 완료"
+      : "수락 대기 중"
+    : "대전 진행 중";
 
   const getInitialRemaining = useCallback(() => {
     if (!battleId) return LOBBY_TIMEOUT;
@@ -163,7 +174,7 @@ function BattleRoom() {
           />
 
           <CardContent className="flex flex-col gap-5">
-            <BattleProgressBar role={role} steps={steps} />
+            <BattleProgressBar role={role} steps={steps} isGameStarted={!isLobby} />
 
             <BattleHeroSection
               role={role}
