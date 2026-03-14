@@ -21,12 +21,10 @@ export type BattleRoundHistoryResponse = {
 
 export type Paginated<T> = {
   content: T[];
+  page: number;
+  size: number;
   totalElements: number;
   totalPages: number;
-  size: number;
-  number: number;
-  first: boolean;
-  last: boolean;
 };
 
 export const getMyBattleStat = async () => {

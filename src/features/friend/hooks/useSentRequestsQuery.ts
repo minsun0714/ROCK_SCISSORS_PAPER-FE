@@ -15,7 +15,9 @@ export const useSentRequestsQuery = (
       queryFn: ({ pageParam }) => getRequestedRequests(debouncedKeyword, pageParam, size),
       initialPageParam: 0,
       getNextPageParam: (lastPage) =>
-        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+        lastPage.content.length < size || lastPage.page + 1 >= lastPage.totalPages
+          ? undefined
+          : lastPage.page + 1,
       enabled,
       throwOnError: true,
     });

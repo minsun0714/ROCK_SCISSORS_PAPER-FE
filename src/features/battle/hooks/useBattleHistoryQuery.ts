@@ -11,7 +11,10 @@ export const useMyBattleHistoryQuery = (
     queryKey: ["battleHistory", "me", keyword, battleResult, size],
     queryFn: ({ pageParam = 0 }) => getMyBattleHistory(keyword, battleResult, pageParam, size),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+    getNextPageParam: (lastPage) =>
+      lastPage.content.length < size || lastPage.page + 1 >= lastPage.totalPages
+        ? undefined
+        : lastPage.page + 1,
     placeholderData: keepPreviousData,
     enabled: !!localStorage.getItem("accessToken"),
     retry: false,
@@ -28,7 +31,10 @@ export const useUserBattleHistoryQuery = (
     queryKey: ["battleHistory", userId, keyword, battleResult, size],
     queryFn: ({ pageParam = 0 }) => getOtherBattleHistory(userId, keyword, battleResult, pageParam, size),
     initialPageParam: 0,
-    getNextPageParam: (lastPage) => (lastPage.last ? undefined : lastPage.number + 1),
+    getNextPageParam: (lastPage) =>
+      lastPage.content.length < size || lastPage.page + 1 >= lastPage.totalPages
+        ? undefined
+        : lastPage.page + 1,
     placeholderData: keepPreviousData,
     enabled: !!localStorage.getItem("accessToken"),
     retry: false,

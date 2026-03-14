@@ -11,7 +11,9 @@ export const useOtherUserFriendsQuery = (userId: number, keyword: string, size: 
       queryFn: ({ pageParam }) => getOtherUserFriends(userId, debouncedKeyword, pageParam, size),
       initialPageParam: 0,
       getNextPageParam: (lastPage) =>
-        lastPage.page + 1 < lastPage.totalPages ? lastPage.page + 1 : undefined,
+        lastPage.content.length < size || lastPage.page + 1 >= lastPage.totalPages
+          ? undefined
+          : lastPage.page + 1,
       throwOnError: true,
     });
 
