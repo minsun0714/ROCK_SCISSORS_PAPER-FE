@@ -191,6 +191,7 @@ export const useNotifications = (isLoggedIn: boolean) => {
       NotificationEventType.BATTLE_REQUEST_CANCELLED,
       (event: MessageEvent) => {
         const data: BattleRequestNotificationData = JSON.parse(event.data);
+        console.log("[SSE] BATTLE_REQUEST_CANCELLED data:", data);
         setNotifications((prev) =>
           prev.filter(
             (notification) =>
