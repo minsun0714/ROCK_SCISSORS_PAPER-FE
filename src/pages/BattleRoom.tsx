@@ -187,6 +187,7 @@ function BattleRoom() {
     if (isLobby && requestId != null && role === "creator" && !rejected) {
       cancelBattleRequest(requestId);
     }
+    shouldCancelOnLeaveRef.current = false;
     navigate("/");
   };
 
