@@ -4,6 +4,7 @@ import BattleRoom from "@/pages/BattleRoom";
 import Callback from "@/pages/Callback";
 import Home from "@/pages/Home";
 import MyPage from "@/pages/MyPage";
+import NotFound from "@/pages/NotFound";
 import UserPage from "@/pages/UserPage";
 import RouteErrorBoundary from "@/shared/components/error/RouteErrorBoundary";
 
@@ -32,6 +33,10 @@ const router = createBrowserRouter([
       {
         path: "oauth/callback",
         element: <Callback />,
+      },
+      {
+        path: "*",
+        element: <NotFound />,
       },
     ],
   },
