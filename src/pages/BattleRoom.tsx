@@ -9,6 +9,7 @@ import BattleProgressBar from "@/features/battle/components/BattleProgressBar";
 import { useCancelBattleRequestMutation } from "@/features/battle/hooks/useCancelBattleRequestMutation";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
+import { useBattleRequest } from "@/features/notification/BattleRequestContext";
 import { useMyProfileQuery } from "@/features/user/hooks";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
@@ -37,6 +38,8 @@ function BattleRoom() {
   const opponent = routeState?.opponent;
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
   const { mutate: cancelBattleRequest } = useCancelBattleRequestMutation();
+  const { isBattleRejected } = useBattleRequest();
+  const rejected = requestId != null && isBattleRejected(requestId);
 
   const { phase, myMove, roundResult, closedMessage, sendMove, sendRetry } =
     useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
@@ -188,7 +191,15 @@ function BattleRoom() {
               opponent={opponent}
             />
 
-            {isLobby ? (
+            {rejected ? (
+              <Card className="border border-white/60 bg-white/80 backdrop-blur">
+                <CardContent className="flex flex-col items-center gap-4 py-8">
+                  <p className="font-display text-2xl text-slate-900">
+                    {opponentName}님이 대전을 거절했습니다.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : isLobby ? (
               <Card className="border border-white/60 bg-white/80 backdrop-blur">
                 <CardContent className="flex flex-col items-center gap-4 py-8">
                   <p className="text-sm text-slate-500">상대방 입장을 기다리는 중...</p>
@@ -228,7 +239,7 @@ function BattleRoom() {
             )}
 
             <div className="flex flex-wrap justify-center gap-2">
-              {phase === "closed" || phase === "disconnected" ? (
+              {rejected || phase === "closed" || phase === "disconnected" ? (
                 <Button size="sm" onClick={() => navigate("/")} className="gap-1.5">
                   <Home className="h-3.5 w-3.5" />
                   홈으로 돌아가기
