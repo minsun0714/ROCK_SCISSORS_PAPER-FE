@@ -74,33 +74,29 @@ function BattleHistorySection({
         <BattleResultFilter value={resultFilter} onChange={onResultFilterChange} />
       </div>
 
-      {isPending && (
-        <p className="text-center text-sm text-muted-foreground">불러오는 중...</p>
-      )}
+      <div className="custom-scrollbar min-h-48 max-h-96 overflow-y-auto rounded-lg border">
+        {isPending ? (
+          <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">불러오는 중...</p>
+        ) : isError ? (
+          <p className="flex h-48 items-center justify-center text-sm text-destructive">대전 기록을 불러오지 못했습니다.</p>
+        ) : rounds.length === 0 ? (
+          <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">대전 기록이 없습니다.</p>
+        ) : (
+          <>
+            <ul className="divide-y">
+              {rounds.map((round, idx) => (
+                <BattleHistoryItem key={`${round.opponentId}-${idx}`} round={round} />
+              ))}
+            </ul>
 
-      {isError && (
-        <p className="text-center text-sm text-destructive">대전 기록을 불러오지 못했습니다.</p>
-      )}
+            {isFetchingNextPage && (
+              <p className="py-3 text-center text-sm text-muted-foreground">더 불러오는 중...</p>
+            )}
 
-      {!isPending && !isError && rounds.length === 0 && (
-        <p className="text-center text-sm text-muted-foreground">대전 기록이 없습니다.</p>
-      )}
-
-      {rounds.length > 0 && (
-        <div className="custom-scrollbar max-h-96 overflow-y-auto rounded-lg border">
-          <ul className="divide-y">
-            {rounds.map((round, idx) => (
-              <BattleHistoryItem key={`${round.opponentId}-${idx}`} round={round} />
-            ))}
-          </ul>
-
-          {isFetchingNextPage && (
-            <p className="py-3 text-center text-sm text-muted-foreground">더 불러오는 중...</p>
-          )}
-
-          <div ref={bottomRef} />
-        </div>
-      )}
+            <div ref={bottomRef} />
+          </>
+        )}
+      </div>
     </section>
   );
 }
