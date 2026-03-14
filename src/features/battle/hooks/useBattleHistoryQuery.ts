@@ -36,7 +36,6 @@ export const useUserBattleHistoryQuery = (
         ? undefined
         : lastPage.page + 1,
     placeholderData: keepPreviousData,
-    enabled: !!localStorage.getItem("accessToken"),
     retry: false,
   });
 };

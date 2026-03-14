@@ -14,7 +14,6 @@ export const useUserBattleStatQuery = (userId: number) => {
   return useQuery({
     queryKey: ["battleStat", userId],
     queryFn: () => getOtherBattleStat(userId),
-    enabled: !!localStorage.getItem("accessToken"),
     retry: false,
   });
 };

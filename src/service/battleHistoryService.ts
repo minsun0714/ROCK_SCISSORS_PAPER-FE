@@ -38,7 +38,6 @@ export const getMyBattleStat = async () => {
 export const getOtherBattleStat = async (userId: number) => {
   const { data } = await apiClient.get<BattleRoundStatResponse>(
     `/battles/stats/${userId}`,
-    { authRequired: true },
   );
   return data;
 };
@@ -74,7 +73,6 @@ export const getOtherBattleHistory = async (
   const { data } = await apiClient.get<Paginated<BattleRoundHistoryResponse>>(
     `/battles/history/${userId}`,
     {
-      authRequired: true,
       params: {
         keyword: keyword || undefined,
         battleResult,
