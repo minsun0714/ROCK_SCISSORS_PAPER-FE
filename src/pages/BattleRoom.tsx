@@ -214,9 +214,6 @@ function BattleRoom() {
                   <p className="font-display text-2xl text-slate-900">
                     {closedMessage ?? "대전이 종료되었습니다."}
                   </p>
-                  <Button onClick={() => navigate("/")} className="mt-2">
-                    홈으로 돌아가기
-                  </Button>
                 </CardContent>
               </Card>
             ) : (
