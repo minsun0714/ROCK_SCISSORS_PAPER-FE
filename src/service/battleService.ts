@@ -118,8 +118,8 @@ export const cancelBattleRequest = async (requestId: BattleRequestIdentifier) =>
   });
 };
 
-export const cancelBattleRequestOnExit = (requestId: BattleRequestIdentifier) => {
-  const token = localStorage.getItem("accessToken");
+export const cancelBattleRequestOnExit = (requestId: BattleRequestIdentifier, cachedToken?: string | null) => {
+  const token = cachedToken ?? localStorage.getItem("accessToken");
   const authorization =
     token == null ? undefined : token.startsWith("Bearer ") ? token : `Bearer ${token}`;
 

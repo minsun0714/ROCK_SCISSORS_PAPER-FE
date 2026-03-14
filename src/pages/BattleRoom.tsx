@@ -49,11 +49,16 @@ function BattleRoom() {
 
   const shouldCancelOnLeaveRef = useRef(false);
   shouldCancelOnLeaveRef.current = isLobby && role === "creator" && requestId != null;
+  const tokenRef = useRef(localStorage.getItem("accessToken"));
+
+  useEffect(() => {
+    tokenRef.current = localStorage.getItem("accessToken");
+  }, []);
 
   useEffect(() => {
     const handleBeforeUnload = () => {
       if (shouldCancelOnLeaveRef.current && requestId != null) {
-        cancelBattleRequestOnExit(requestId);
+        cancelBattleRequestOnExit(requestId, tokenRef.current);
       }
     };
 
@@ -61,7 +66,7 @@ function BattleRoom() {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       if (shouldCancelOnLeaveRef.current && requestId != null) {
-        cancelBattleRequestOnExit(requestId);
+        cancelBattleRequestOnExit(requestId, tokenRef.current);
       }
     };
   }, [requestId]);
