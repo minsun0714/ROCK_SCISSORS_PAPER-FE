@@ -108,8 +108,6 @@ function NotificationBell({
     const battleResponse = toBattleRequestResponse(data);
     const requestId = resolveBattleRequestId(battleResponse);
 
-    console.log("[Battle] accept - data:", data, "battleResponse:", battleResponse, "requestId:", requestId);
-
     if (!requestId) {
       return;
     }

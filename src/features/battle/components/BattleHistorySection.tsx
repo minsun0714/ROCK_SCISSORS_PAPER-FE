@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
 import type { BattleResult, BattleRoundHistoryResponse, Paginated } from "@/service/battleHistoryService";

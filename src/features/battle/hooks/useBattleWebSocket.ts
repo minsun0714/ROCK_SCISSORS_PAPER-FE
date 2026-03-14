@@ -48,7 +48,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
       }
 
       wsRef.current = ws;
-      console.log("[WS] Connected to battle room:", roomId);
+
       setPhase("lobby");
     };
 
@@ -57,7 +57,6 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
 
       try {
         const msg: BattleMessage = JSON.parse(event.data);
-        console.log("[WS] Received:", msg);
         setMessages((prev) => [...prev, msg]);
 
         const type = msg.type as string;
@@ -102,13 +101,12 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
           setPhase("closed");
         }
       } catch {
-        console.log("[WS] Non-JSON message:", event.data);
+        // non-JSON message, ignore
       }
     };
 
     ws.onclose = (event) => {
       if (cancelled) return;
-      console.log("[WS] Disconnected:", event.code, event.reason);
       setPhase((prev) => (prev === "closed" ? prev : "disconnected"));
     };
 
@@ -129,7 +127,6 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
       wsRef.current.send(JSON.stringify({ type: "CHOICE", move }));
       setMyMove(move);
       setPhase("waiting");
-      console.log("[WS] Sent move:", move);
     }
   }, []);
 
@@ -139,7 +136,6 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
       setMyMove(null);
       setRoundResult(null);
       setPhase("playing");
-      console.log("[WS] Sent retry");
     }
   }, []);
 

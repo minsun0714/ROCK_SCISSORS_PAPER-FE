@@ -30,7 +30,6 @@ export const processAuthCallback = async (code: string) => {
       localStorage.setItem("accessToken", accessToken);
     }
 
-    console.log("Access token:", accessToken);
     return { ok: true, accessToken };
   } catch (error) {
     console.error("Error fetching access token:", error);
