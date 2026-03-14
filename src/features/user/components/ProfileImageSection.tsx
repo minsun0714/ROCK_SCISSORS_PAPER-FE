@@ -8,21 +8,25 @@ import { presenceColorClass } from "@/features/presence/presenceColorClass";
 
 type ProfileImageSectionProps = {
   userId?: number | null;
+  nickname?: string | null;
   profileImageUrl?: string | null;
   isPending?: boolean;
   onFileChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   statusMessage?: string;
   onStatusEditClick?: () => void;
+  onNicknameEditClick?: () => void;
   children?: ReactNode;
 };
 
 function ProfileImageSection({
   userId,
+  nickname,
   profileImageUrl,
   isPending = false,
   onFileChange,
   statusMessage,
   onStatusEditClick,
+  onNicknameEditClick,
   children,
 }: ProfileImageSectionProps) {
   const editable = !!onFileChange;
@@ -66,6 +70,22 @@ function ProfileImageSection({
             </>
           )}
         </div>
+
+        {nickname && (
+          <div className="flex items-center gap-1">
+            <span className="font-display text-xl text-foreground">{nickname}</span>
+            {onNicknameEditClick && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={onNicknameEditClick}
+                className="h-7 w-7 shrink-0"
+              >
+                <Pencil className="h-3.5 w-3.5" />
+              </Button>
+            )}
+          </div>
+        )}
 
         <div className="flex w-full items-center gap-2">
           <p className="flex-1 text-center text-sm text-muted-foreground">

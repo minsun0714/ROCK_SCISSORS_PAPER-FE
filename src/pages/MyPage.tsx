@@ -10,6 +10,7 @@ import { useMyBattleStatQuery } from "@/features/battle/hooks/useBattleStatQuery
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
+import NicknameEditModal from "@/features/user/components/NicknameEditModal";
 import StatusMessageEditModal from "@/features/user/components/StatusMessageEditModal";
 import {
   useMyProfileQuery,
@@ -18,7 +19,8 @@ import {
 import type { BattleResult } from "@/service/battleHistoryService";
 
 function MyPage() {
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isStatusEditModalOpen, setIsStatusEditModalOpen] = useState(false);
+  const [isNicknameEditModalOpen, setIsNicknameEditModalOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
   const [friendTab, setFriendTab] = useState("friends");
   const [friendKeyword, setFriendKeyword] = useState("");
@@ -102,7 +104,7 @@ function MyPage() {
   }
 
   const displayMessage = resultMessage || uploadProfileImageResultMessage;
-  const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
+  const { userId, nickname, profileImageUrl, statusMessage } = myProfile ?? {};
 
   return (
     <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-3xl flex-col items-center gap-5 px-4 py-10">
@@ -110,11 +112,13 @@ function MyPage() {
 
       <ProfileImageSection
         userId={userId}
+        nickname={nickname}
         profileImageUrl={profileImageUrl}
         isPending={isUploadProfileImagePending}
         onFileChange={handleProfileImageChange}
         statusMessage={statusMessage ?? ""}
-        onStatusEditClick={() => setIsEditModalOpen(true)}
+        onStatusEditClick={() => setIsStatusEditModalOpen(true)}
+        onNicknameEditClick={() => setIsNicknameEditModalOpen(true)}
       >
         <BattleStatCard data={statData} isPending={isStatPending} />
       </ProfileImageSection>
@@ -177,10 +181,17 @@ function MyPage() {
         </CardContent>
       </Card>
 
-      {isEditModalOpen && (
+      {isStatusEditModalOpen && (
         <StatusMessageEditModal
           currentMessage={statusMessage ?? ""}
-          onClose={() => setIsEditModalOpen(false)}
+          onClose={() => setIsStatusEditModalOpen(false)}
+        />
+      )}
+
+      {isNicknameEditModalOpen && (
+        <NicknameEditModal
+          currentNickname={nickname ?? ""}
+          onClose={() => setIsNicknameEditModalOpen(false)}
         />
       )}
     </main>

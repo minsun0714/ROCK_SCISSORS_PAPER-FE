@@ -41,8 +41,23 @@ export type UserProfileResponse = {
 
 export type MyProfileResponse = {
   userId?: number | null;
+  nickname?: string | null;
   profileImageUrl?: string | null;
   statusMessage?: string | null;
+};
+
+type UpdateNicknameParams = {
+  nickname: string;
+};
+
+export const updateMyNickname = async ({ nickname }: UpdateNicknameParams) => {
+  const { data } = await apiClient.patch(
+    "/users/me/nickname",
+    { nickname },
+    { authRequired: true },
+  );
+
+  return data;
 };
 
 export const updateMyStatusMessage = async ({ statusMessage }: UpdateStatusMessageParams) => {
