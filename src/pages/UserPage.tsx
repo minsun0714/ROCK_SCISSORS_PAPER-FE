@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
+import BattleHistorySection from "@/features/battle/components/BattleHistorySection";
+import BattleStatCard from "@/features/battle/components/BattleStatCard";
 import FriendListSection from "@/features/friend/components/FriendListSection";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import FriendStatusSection from "@/features/friend/components/FriendStatusSection";
 import { useOtherUserFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
@@ -57,7 +60,9 @@ function UserPage() {
         userId={profileUserId}
         profileImageUrl={profileImageUrl}
         statusMessage={statusMessage ?? ""}
-      />
+      >
+        {profileUserId != null && <BattleStatCard userId={profileUserId} />}
+      </ProfileImageSection>
 
       {friendInfo && profileUserId != null && (
         <FriendStatusSection
@@ -71,19 +76,31 @@ function UserPage() {
       )}
 
       {profileUserId != null && (
-        <FriendListSection
-          friends={friends}
-          keyword={friendKeyword}
-          onKeywordChange={setFriendKeyword}
-          fetchNextPage={fetchNextPage}
-          hasNextPage={hasNextPage ?? false}
-          isFetchingNextPage={isFetchingNextPage}
-          isPending={isFriendsPending}
-          isError={isFriendsError}
-          invalidateKey={userId!}
-          title="친구 목록"
-          emptyMessage="친구가 없습니다."
-        />
+        <Card className="w-full">
+          <CardContent className="py-5">
+            <FriendListSection
+              friends={friends}
+              keyword={friendKeyword}
+              onKeywordChange={setFriendKeyword}
+              fetchNextPage={fetchNextPage}
+              hasNextPage={hasNextPage ?? false}
+              isFetchingNextPage={isFetchingNextPage}
+              isPending={isFriendsPending}
+              isError={isFriendsError}
+              invalidateKey={userId!}
+              title="친구 목록"
+              emptyMessage="친구가 없습니다."
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {profileUserId != null && (
+        <Card className="w-full">
+          <CardContent className="py-5">
+            <BattleHistorySection userId={profileUserId} />
+          </CardContent>
+        </Card>
       )}
     </main>
   );

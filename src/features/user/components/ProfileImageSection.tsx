@@ -1,5 +1,5 @@
 import { Camera, Loader2, Pencil, UserRound } from "lucide-react";
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/shared/components/ui/avatar";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent } from "@/shared/components/ui/card";
@@ -13,6 +13,7 @@ type ProfileImageSectionProps = {
   onFileChange?: (event: ChangeEvent<HTMLInputElement>) => void;
   statusMessage?: string;
   onStatusEditClick?: () => void;
+  children?: ReactNode;
 };
 
 function ProfileImageSection({
@@ -22,6 +23,7 @@ function ProfileImageSection({
   onFileChange,
   statusMessage,
   onStatusEditClick,
+  children,
 }: ProfileImageSectionProps) {
   const editable = !!onFileChange;
   const { ref, presenceStatus } = usePresence<HTMLDivElement>(userId);
@@ -80,6 +82,8 @@ function ProfileImageSection({
             </Button>
           )}
         </div>
+
+        {children}
       </CardContent>
     </Card>
   );

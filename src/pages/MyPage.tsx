@@ -1,6 +1,9 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
+import BattleHistorySection from "@/features/battle/components/BattleHistorySection";
+import BattleStatCard from "@/features/battle/components/BattleStatCard";
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
@@ -65,10 +68,16 @@ function MyPage() {
   const receivedQuery = useReceivedRequestsQuery(friendKeyword, 10, friendTab === "received");
   const sentQuery = useSentRequestsQuery(friendKeyword, 10, friendTab === "sent");
 
-  const activeQuery =
-    friendTab === "friends" ? friendsQuery :
-    friendTab === "received" ? receivedQuery :
-    sentQuery;
+  const {
+    friends,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isPending: isFriendsPending,
+    isError: isFriendsError,
+  } = friendTab === "friends" ? friendsQuery :
+      friendTab === "received" ? receivedQuery :
+      sentQuery;
 
   const displayMessage = resultMessage || uploadProfileImageResultMessage;
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
@@ -84,7 +93,9 @@ function MyPage() {
         onFileChange={handleProfileImageChange}
         statusMessage={statusMessage ?? ""}
         onStatusEditClick={() => setIsEditModalOpen(true)}
-      />
+      >
+        <BattleStatCard userId="me" />
+      </ProfileImageSection>
 
       {displayMessage && (
         <p className="w-full rounded-lg border bg-card px-4 py-2.5 text-sm">
@@ -92,37 +103,46 @@ function MyPage() {
         </p>
       )}
 
-      <section className="w-full">
-        <Tabs
-          value={friendTab}
-          onValueChange={(value) => { setFriendTab(value); setFriendKeyword(""); }}
-        >
-          <TabsList className="mb-3 w-full">
-            <TabsTrigger value="friends" className="flex-1">친구 목록</TabsTrigger>
-            <TabsTrigger value="received" className="flex-1">나에게 온 요청</TabsTrigger>
-            <TabsTrigger value="sent" className="flex-1">신청 내역</TabsTrigger>
-          </TabsList>
+      <Card className="w-full">
+        <CardContent className="py-5">
+          <h2 className="mb-3 text-lg font-semibold">친구</h2>
+          <Tabs
+            value={friendTab}
+            onValueChange={(value) => { setFriendTab(value); setFriendKeyword(""); }}
+          >
+            <TabsList className="mb-3 w-full">
+              <TabsTrigger value="friends" className="flex-1">친구 목록</TabsTrigger>
+              <TabsTrigger value="received" className="flex-1">나에게 온 요청</TabsTrigger>
+              <TabsTrigger value="sent" className="flex-1">신청 내역</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value={friendTab}>
-            <FriendListSection
-              friends={activeQuery.friends}
-              keyword={friendKeyword}
-              onKeywordChange={setFriendKeyword}
-              fetchNextPage={activeQuery.fetchNextPage}
-              hasNextPage={activeQuery.hasNextPage ?? false}
-              isFetchingNextPage={activeQuery.isFetchingNextPage}
-              isPending={activeQuery.isPending}
-              isError={activeQuery.isError}
-              invalidateKey="me"
-              emptyMessage={
-                friendTab === "friends" ? "친구가 없습니다." :
-                friendTab === "received" ? "받은 요청이 없습니다." :
-                "보낸 요청이 없습니다."
-              }
-            />
-          </TabsContent>
-        </Tabs>
-      </section>
+            <TabsContent value={friendTab}>
+              <FriendListSection
+                friends={friends}
+                keyword={friendKeyword}
+                onKeywordChange={setFriendKeyword}
+                fetchNextPage={fetchNextPage}
+                hasNextPage={hasNextPage ?? false}
+                isFetchingNextPage={isFetchingNextPage}
+                isPending={isFriendsPending}
+                isError={isFriendsError}
+                invalidateKey="me"
+                emptyMessage={
+                  friendTab === "friends" ? "친구가 없습니다." :
+                  friendTab === "received" ? "받은 요청이 없습니다." :
+                  "보낸 요청이 없습니다."
+                }
+              />
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      <Card className="w-full">
+        <CardContent className="py-5">
+          <BattleHistorySection userId="me" />
+        </CardContent>
+      </Card>
 
       {isEditModalOpen && (
         <StatusMessageEditModal
