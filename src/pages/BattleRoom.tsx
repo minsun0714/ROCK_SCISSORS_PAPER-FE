@@ -156,7 +156,7 @@ function BattleRoom() {
   };
 
   const handleCancelBattle = () => {
-    if (requestId != null && role === "creator") {
+    if (isLobby && requestId != null && role === "creator") {
       cancelBattleRequest(requestId);
     }
     navigate("/");
@@ -246,7 +246,7 @@ function BattleRoom() {
                     className="gap-1.5 text-destructive hover:bg-destructive/10"
                   >
                     <X className="h-3.5 w-3.5" />
-                    대전 취소
+                    {isLobby ? "대전 취소" : "대전 나가기"}
                   </Button>
                 </>
               )}
