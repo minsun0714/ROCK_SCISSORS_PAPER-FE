@@ -1,10 +1,11 @@
+import { Copy, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BattleGameSection from "@/features/battle/components/BattleGameSection";
 import BattleHeroSection from "@/features/battle/components/BattleHeroSection";
 import BattleLobbyHeader from "@/features/battle/components/BattleLobbyHeader";
-import BattleSidebar from "@/features/battle/components/BattleSidebar";
+import BattleProgressBar from "@/features/battle/components/BattleProgressBar";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
 import { useMyProfileQuery } from "@/features/user/hooks";
@@ -14,9 +15,9 @@ import { Card, CardContent } from "@/shared/components/ui/card";
 const LOBBY_TIMEOUT = 5 * 60;
 const MOVE_TIMEOUT = 30;
 
-const waitingSteps = ["대전방 생성 완료", "상대에게 초대 알림 전송", "상대 입장 대기"];
+const waitingSteps = ["대전방 생성", "초대 알림 전송", "상대 입장 대기"];
 
-const joinedSteps = ["대전방 생성 완료", "초대 수락 완료", "양쪽 플레이어 입장"];
+const joinedSteps = ["대전방 생성", "초대 수락", "양쪽 입장"];
 
 const formatTime = (seconds: number) => {
   const m = Math.floor(seconds / 60);
@@ -145,14 +146,14 @@ function BattleRoom() {
   };
 
   return (
-    <main className="relative isolate min-h-[calc(100vh-56px)] overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(168,85,247,0.18),_transparent_35%),radial-gradient(circle_at_top_right,_rgba(244,114,182,0.18),_transparent_25%),linear-gradient(180deg,_#fff7fb_0%,_#fffdfa_48%,_#ffffff_100%)]">
+    <main className="relative isolate min-h-[calc(100vh-56px)] overflow-hidden bg-[radial-gradient(circle_at_top_left,rgba(168,85,247,0.18),transparent_35%),radial-gradient(circle_at_top_right,rgba(244,114,182,0.18),transparent_25%),linear-gradient(180deg,#fff7fb_0%,#fffdfa_48%,#ffffff_100%)]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute left-[-4rem] top-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
-        <div className="absolute right-[-3rem] top-32 h-56 w-56 rounded-full bg-amber-300/20 blur-3xl" />
-        <div className="absolute bottom-[-4rem] left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-rose-300/20 blur-3xl" />
+        <div className="absolute -left-16 top-20 h-40 w-40 rounded-full bg-primary/10 blur-3xl" />
+        <div className="absolute -right-12 top-32 h-56 w-56 rounded-full bg-amber-300/20 blur-3xl" />
+        <div className="absolute -bottom-16 left-1/2 h-48 w-48 -translate-x-1/2 rounded-full bg-rose-300/20 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col gap-6 px-4 py-8 sm:px-6 sm:py-10">
         <Card className="border border-white/60 bg-white/80 shadow-[0_30px_80px_-40px_rgba(76,29,149,0.35)] backdrop-blur">
           <BattleLobbyHeader
             battleId={battleId}
@@ -161,65 +162,72 @@ function BattleRoom() {
             statusLabel={statusLabel}
           />
 
-          <CardContent className="grid gap-4 lg:grid-cols-[1.3fr_0.8fr]">
-            <div className="flex flex-col gap-4">
-              <BattleHeroSection
-                role={role}
-                myProfileImageUrl={myProfile?.profileImageUrl}
-                opponent={opponent}
-              />
+          <CardContent className="flex flex-col gap-5">
+            <BattleProgressBar role={role} steps={steps} />
 
-              {isLobby ? (
-                <Card className="border border-white/60 bg-white/80 backdrop-blur">
-                  <CardContent className="flex flex-col items-center gap-4 py-8">
-                    <p className="text-sm text-slate-500">상대방 입장을 기다리는 중...</p>
-                    <p className="font-display text-4xl tabular-nums tracking-tight text-slate-900">
-                      {formatTime(remainingSeconds)}
-                    </p>
-                    <div className="h-2 w-48 overflow-hidden rounded-full bg-slate-100">
-                      <div
-                        className="h-full rounded-full bg-primary transition-all duration-1000"
-                        style={{
-                          width: `${(remainingSeconds / LOBBY_TIMEOUT) * 100}%`,
-                        }}
-                      />
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      시간이 초과되면 자동으로 홈 화면으로 돌아갑니다
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : phase === "closed" ? (
-                <Card className="border border-white/60 bg-white/80 backdrop-blur">
-                  <CardContent className="flex flex-col items-center gap-4 py-8">
-                    <p className="font-display text-2xl text-slate-900">
-                      {closedMessage ?? "대전이 종료되었습니다."}
-                    </p>
-                    <Button onClick={() => navigate("/")} className="mt-2">
-                      홈으로 돌아가기
-                    </Button>
-                  </CardContent>
-                </Card>
-              ) : (
-                <BattleGameSection
-                  phase={phase}
-                  myMove={myMove}
-                  roundResult={roundResult}
-                  moveTimer={moveSeconds}
-                  onSelectMove={sendMove}
-                  onRetry={sendRetry}
-                />
-              )}
-            </div>
-
-            <BattleSidebar
+            <BattleHeroSection
               role={role}
-              steps={steps}
-              canCancelBattle
-              isCancellingBattleRequest={false}
-              onCopyRoomLink={handleCopyRoomLink}
-              onCancelBattle={handleCancelBattle}
+              myProfileImageUrl={myProfile?.profileImageUrl}
+              opponent={opponent}
             />
+
+            {isLobby ? (
+              <Card className="border border-white/60 bg-white/80 backdrop-blur">
+                <CardContent className="flex flex-col items-center gap-4 py-8">
+                  <p className="text-sm text-slate-500">상대방 입장을 기다리는 중...</p>
+                  <p className="font-display text-4xl tabular-nums tracking-tight text-slate-900">
+                    {formatTime(remainingSeconds)}
+                  </p>
+                  <div className="h-2 w-48 overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-1000"
+                      style={{
+                        width: `${(remainingSeconds / LOBBY_TIMEOUT) * 100}%`,
+                      }}
+                    />
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    시간이 초과되면 자동으로 홈 화면으로 돌아갑니다
+                  </p>
+                </CardContent>
+              </Card>
+            ) : phase === "closed" ? (
+              <Card className="border border-white/60 bg-white/80 backdrop-blur">
+                <CardContent className="flex flex-col items-center gap-4 py-8">
+                  <p className="font-display text-2xl text-slate-900">
+                    {closedMessage ?? "대전이 종료되었습니다."}
+                  </p>
+                  <Button onClick={() => navigate("/")} className="mt-2">
+                    홈으로 돌아가기
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <BattleGameSection
+                phase={phase}
+                myMove={myMove}
+                roundResult={roundResult}
+                moveTimer={moveSeconds}
+                onSelectMove={sendMove}
+                onRetry={sendRetry}
+              />
+            )}
+
+            <div className="flex flex-wrap justify-center gap-2">
+              <Button variant="outline" size="sm" onClick={handleCopyRoomLink} className="gap-1.5">
+                <Copy className="h-3.5 w-3.5" />
+                방 링크 복사
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleCancelBattle}
+                className="gap-1.5 text-destructive hover:bg-destructive/10"
+              >
+                <X className="h-3.5 w-3.5" />
+                대전 취소
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
