@@ -38,12 +38,21 @@ export const processAuthCallback = async (code: string) => {
   }
 };
 
+const isKakaoInAppBrowser = () => /KAKAOTALK/i.test(navigator.userAgent);
+
 export const startGoogleLogin = () => {
   const {
     location: { pathname, search, hash },
   } = window;
   const currentPath = `${pathname}${search}${hash}`;
   sessionStorage.setItem(POST_LOGIN_REDIRECT_KEY, currentPath);
+
+  if (isKakaoInAppBrowser()) {
+    const cleanUrl = `${window.location.origin}${currentPath}`;
+    window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(cleanUrl)}`;
+    return;
+  }
+
   window.location.replace(GOOGLE_LOGIN_URL);
 };
 
