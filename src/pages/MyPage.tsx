@@ -1,9 +1,12 @@
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import { Navigate } from "react-router-dom";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/shared/components/ui/tabs";
 import BattleHistorySection from "@/features/battle/components/BattleHistorySection";
 import BattleStatCard from "@/features/battle/components/BattleStatCard";
+import { useMyBattleHistoryQuery } from "@/features/battle/hooks/useBattleHistoryQuery";
+import { useMyBattleStatQuery } from "@/features/battle/hooks/useBattleStatQuery";
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import { useMyFriendsQuery, useReceivedRequestsQuery, useSentRequestsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
@@ -12,14 +15,19 @@ import {
   useMyProfileQuery,
   useUploadProfileImageMutation,
 } from "@/features/user/hooks";
+import type { BattleResult } from "@/service/battleHistoryService";
 
 function MyPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [resultMessage, setResultMessage] = useState("");
   const [friendTab, setFriendTab] = useState("friends");
   const [friendKeyword, setFriendKeyword] = useState("");
+  const [historyKeyword, setHistoryKeyword] = useState("");
+  const [historyFilter, setHistoryFilter] = useState<BattleResult | undefined>(undefined);
 
-  const { data: myProfile } = useMyProfileQuery();
+  const { data: myProfile, isPending: isProfilePending } = useMyProfileQuery({ throwOnError: false });
+
+  const isLoggedIn = !!myProfile;
 
   const {
     mutate: uploadProfileImage,
@@ -79,6 +87,20 @@ function MyPage() {
       friendTab === "received" ? receivedQuery :
       sentQuery;
 
+  const { data: statData, isPending: isStatPending } = useMyBattleStatQuery();
+  const {
+    data: historyData,
+    isPending: isHistoryPending,
+    isError: isHistoryError,
+    fetchNextPage: fetchNextHistoryPage,
+    hasNextPage: hasNextHistoryPage,
+    isFetchingNextPage: isFetchingNextHistoryPage,
+  } = useMyBattleHistoryQuery(historyKeyword, historyFilter);
+
+  if (!isProfilePending && !isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
+
   const displayMessage = resultMessage || uploadProfileImageResultMessage;
   const { userId, profileImageUrl, statusMessage } = myProfile ?? {};
 
@@ -94,7 +116,7 @@ function MyPage() {
         statusMessage={statusMessage ?? ""}
         onStatusEditClick={() => setIsEditModalOpen(true)}
       >
-        <BattleStatCard userId="me" />
+        <BattleStatCard data={statData} isPending={isStatPending} />
       </ProfileImageSection>
 
       {displayMessage && (
@@ -140,7 +162,18 @@ function MyPage() {
 
       <Card className="w-full">
         <CardContent className="py-5">
-          <BattleHistorySection userId="me" />
+          <BattleHistorySection
+            data={historyData}
+            isPending={isHistoryPending}
+            isError={isHistoryError}
+            fetchNextPage={fetchNextHistoryPage}
+            hasNextPage={hasNextHistoryPage ?? false}
+            isFetchingNextPage={isFetchingNextHistoryPage}
+            keyword={historyKeyword}
+            onKeywordChange={setHistoryKeyword}
+            resultFilter={historyFilter}
+            onResultFilterChange={setHistoryFilter}
+          />
         </CardContent>
       </Card>
 

@@ -2,18 +2,23 @@ import { useState } from "react";
 import { Navigate, useParams } from "react-router-dom";
 import BattleHistorySection from "@/features/battle/components/BattleHistorySection";
 import BattleStatCard from "@/features/battle/components/BattleStatCard";
+import { useUserBattleHistoryQuery } from "@/features/battle/hooks/useBattleHistoryQuery";
+import { useUserBattleStatQuery } from "@/features/battle/hooks/useBattleStatQuery";
 import FriendListSection from "@/features/friend/components/FriendListSection";
 import { Card, CardContent } from "@/shared/components/ui/card";
 import FriendStatusSection from "@/features/friend/components/FriendStatusSection";
 import { useOtherUserFriendsQuery } from "@/features/friend/hooks";
 import ProfileImageSection from "@/features/user/components/ProfileImageSection";
 import { useMyProfileQuery, useUserProfileQuery } from "@/features/user/hooks";
+import type { BattleResult } from "@/service/battleHistoryService";
 
 function UserPage() {
   const { userId } = useParams<{ userId: string }>();
   const { data: myProfile } = useMyProfileQuery({ throwOnError: false });
   const { data: userProfile, isPending, isError } = useUserProfileQuery(userId!);
   const [friendKeyword, setFriendKeyword] = useState("");
+  const [historyKeyword, setHistoryKeyword] = useState("");
+  const [historyFilter, setHistoryFilter] = useState<BattleResult | undefined>(undefined);
 
   const {
     userId: profileUserId,
@@ -31,6 +36,16 @@ function UserPage() {
     isPending: isFriendsPending,
     isError: isFriendsError,
   } = useOtherUserFriendsQuery(profileUserId ?? 0, friendKeyword);
+
+  const { data: statData, isPending: isStatPending } = useUserBattleStatQuery(profileUserId ?? 0);
+  const {
+    data: historyData,
+    isPending: isHistoryPending,
+    isError: isHistoryError,
+    fetchNextPage: fetchNextHistoryPage,
+    hasNextPage: hasNextHistoryPage,
+    isFetchingNextPage: isFetchingNextHistoryPage,
+  } = useUserBattleHistoryQuery(profileUserId ?? 0, historyKeyword, historyFilter);
 
   if (myProfile?.userId != null && String(myProfile.userId) === userId) {
     return <Navigate to="/my" replace />;
@@ -61,7 +76,7 @@ function UserPage() {
         profileImageUrl={profileImageUrl}
         statusMessage={statusMessage ?? ""}
       >
-        {profileUserId != null && <BattleStatCard userId={profileUserId} />}
+        <BattleStatCard data={statData} isPending={isStatPending} />
       </ProfileImageSection>
 
       {friendInfo && profileUserId != null && (
@@ -98,7 +113,18 @@ function UserPage() {
       {profileUserId != null && (
         <Card className="w-full">
           <CardContent className="py-5">
-            <BattleHistorySection userId={profileUserId} />
+            <BattleHistorySection
+              data={historyData}
+              isPending={isHistoryPending}
+              isError={isHistoryError}
+              fetchNextPage={fetchNextHistoryPage}
+              hasNextPage={hasNextHistoryPage ?? false}
+              isFetchingNextPage={isFetchingNextHistoryPage}
+              keyword={historyKeyword}
+              onKeywordChange={setHistoryKeyword}
+              resultFilter={historyFilter}
+              onResultFilterChange={setHistoryFilter}
+            />
           </CardContent>
         </Card>
       )}

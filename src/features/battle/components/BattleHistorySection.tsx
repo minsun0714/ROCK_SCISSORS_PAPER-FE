@@ -1,22 +1,36 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/shared/components/ui/input";
-import type { BattleResult } from "@/service/battleHistoryService";
-import { useBattleHistoryQuery } from "@/features/battle/hooks/useBattleHistoryQuery";
+import type { BattleResult, BattleRoundHistoryResponse, Paginated } from "@/service/battleHistoryService";
+import type { InfiniteData } from "@tanstack/react-query";
 import BattleHistoryItem from "@/features/battle/components/BattleHistoryItem";
 import BattleResultFilter from "@/features/battle/components/BattleResultFilter";
 
 type BattleHistorySectionProps = {
-  userId: number | "me";
+  data: InfiniteData<Paginated<BattleRoundHistoryResponse>> | undefined;
+  isPending: boolean;
+  isError: boolean;
+  fetchNextPage: () => void;
+  hasNextPage: boolean;
+  isFetchingNextPage: boolean;
+  keyword: string;
+  onKeywordChange: (value: string) => void;
+  resultFilter: BattleResult | undefined;
+  onResultFilterChange: (value: BattleResult | undefined) => void;
 };
 
-function BattleHistorySection({ userId }: BattleHistorySectionProps) {
-  const [keyword, setKeyword] = useState("");
-  const [resultFilter, setResultFilter] = useState<BattleResult | undefined>(undefined);
-
-  const { data, isPending, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useBattleHistoryQuery(userId, keyword, resultFilter);
-
+function BattleHistorySection({
+  data,
+  isPending,
+  isError,
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage,
+  keyword,
+  onKeywordChange,
+  resultFilter,
+  onResultFilterChange,
+}: BattleHistorySectionProps) {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const bottomRef = useCallback(
     (node: HTMLDivElement | null) => {
@@ -49,7 +63,7 @@ function BattleHistorySection({ userId }: BattleHistorySectionProps) {
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             value={keyword}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={(e) => onKeywordChange(e.target.value)}
             placeholder="상대 닉네임 검색"
             className="pl-9"
           />
@@ -57,7 +71,7 @@ function BattleHistorySection({ userId }: BattleHistorySectionProps) {
       </div>
 
       <div className="mb-3">
-        <BattleResultFilter value={resultFilter} onChange={setResultFilter} />
+        <BattleResultFilter value={resultFilter} onChange={onResultFilterChange} />
       </div>
 
       {isPending && (

@@ -1,13 +1,12 @@
 import { Trophy, XCircle, Minus, Swords } from "lucide-react";
-import { useBattleStatQuery } from "@/features/battle/hooks/useBattleStatQuery";
+import type { BattleRoundStatResponse } from "@/service/battleHistoryService";
 
 type BattleStatCardProps = {
-  userId: number | "me";
+  data: BattleRoundStatResponse | undefined;
+  isPending: boolean;
 };
 
-function BattleStatCard({ userId }: BattleStatCardProps) {
-  const { data, isPending, isError } = useBattleStatQuery(userId);
-
+function BattleStatCard({ data, isPending }: BattleStatCardProps) {
   if (isPending) {
     return (
       <p className="py-4 text-center text-sm text-muted-foreground">
@@ -16,7 +15,7 @@ function BattleStatCard({ userId }: BattleStatCardProps) {
     );
   }
 
-  if (isError || !data) return null;
+  if (!data) return null;
 
   const stats = [
     { label: "전체", value: data.totalCount, icon: Swords, color: "text-slate-700" },
