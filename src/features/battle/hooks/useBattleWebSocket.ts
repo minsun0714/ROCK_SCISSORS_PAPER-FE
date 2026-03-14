@@ -105,7 +105,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
       }
     };
 
-    ws.onclose = (event) => {
+    ws.onclose = () => {
       if (cancelled) return;
       setPhase((prev) => (prev === "closed" ? prev : "disconnected"));
     };
