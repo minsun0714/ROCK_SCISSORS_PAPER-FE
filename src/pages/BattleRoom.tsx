@@ -6,6 +6,7 @@ import BattleGameSection from "@/features/battle/components/BattleGameSection";
 import BattleHeroSection from "@/features/battle/components/BattleHeroSection";
 import BattleLobbyHeader from "@/features/battle/components/BattleLobbyHeader";
 import BattleProgressBar from "@/features/battle/components/BattleProgressBar";
+import { useCancelBattleRequestMutation } from "@/features/battle/hooks/useCancelBattleRequestMutation";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
 import { useMyProfileQuery } from "@/features/user/hooks";
@@ -32,8 +33,10 @@ function BattleRoom() {
   const { data: myProfile } = useMyProfileQuery({ throwOnError: false });
   const routeState = location.state as BattleRouteState | null;
   const role = routeState?.role;
+  const requestId = routeState?.requestId;
   const opponent = routeState?.opponent;
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
+  const { mutate: cancelBattleRequest } = useCancelBattleRequestMutation();
 
   const { phase, myMove, roundResult, closedMessage, sendMove, sendRetry } =
     useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
@@ -153,6 +156,9 @@ function BattleRoom() {
   };
 
   const handleCancelBattle = () => {
+    if (requestId != null) {
+      cancelBattleRequest(requestId);
+    }
     navigate("/");
   };
 
