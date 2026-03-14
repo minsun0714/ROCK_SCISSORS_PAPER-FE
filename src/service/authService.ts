@@ -49,7 +49,13 @@ export const startGoogleLogin = () => {
 
   if (isKakaoInAppBrowser()) {
     const cleanUrl = `${window.location.origin}${currentPath}`;
-    window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(cleanUrl)}`;
+    const isAndroid = /android/i.test(navigator.userAgent);
+
+    if (isAndroid) {
+      window.location.href = `intent://${cleanUrl.replace(/^https?:\/\//, "")}#Intent;scheme=https;package=com.android.chrome;end`;
+    } else {
+      window.location.href = `kakaotalk://web/openExternal?url=${encodeURIComponent(cleanUrl)}`;
+    }
     return;
   }
 
