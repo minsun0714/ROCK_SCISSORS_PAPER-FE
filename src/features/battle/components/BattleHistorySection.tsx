@@ -74,13 +74,13 @@ function BattleHistorySection({
         <BattleResultFilter value={resultFilter} onChange={onResultFilterChange} />
       </div>
 
-      <div className="custom-scrollbar min-h-48 max-h-96 overflow-y-auto rounded-lg border">
+      <div className="custom-scrollbar min-h-96 max-h-96 overflow-y-auto rounded-lg border">
         {isPending ? (
-          <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">불러오는 중...</p>
+          <p className="flex h-96 items-center justify-center text-sm text-muted-foreground">불러오는 중...</p>
         ) : isError ? (
-          <p className="flex h-48 items-center justify-center text-sm text-destructive">대전 기록을 불러오지 못했습니다.</p>
+          <p className="flex h-96 items-center justify-center text-sm text-destructive">대전 기록을 불러오지 못했습니다.</p>
         ) : rounds.length === 0 ? (
-          <p className="flex h-48 items-center justify-center text-sm text-muted-foreground">대전 기록이 없습니다.</p>
+          <p className="flex h-96 items-center justify-center text-sm text-muted-foreground">대전 기록이 없습니다.</p>
         ) : (
           <>
             <ul className="divide-y">

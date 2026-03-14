@@ -36,9 +36,12 @@ function BattleStatCard({ data, isPending }: BattleStatCardProps) {
         ))}
       </div>
       {data.totalCount > 0 && (
-        <p className="mt-2 text-center text-sm text-muted-foreground">
-          승률 {Math.round(data.winRate * 100)}%
-        </p>
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <span className="text-xs font-medium text-muted-foreground">승률</span>
+          <span className="font-display text-lg text-primary">
+            {Math.round(data.winRate * 100)}%
+          </span>
+        </div>
       )}
     </div>
   );

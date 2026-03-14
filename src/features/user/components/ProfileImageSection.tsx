@@ -67,8 +67,6 @@ function ProfileImageSection({
           )}
         </div>
 
-        {children}
-
         <div className="flex w-full items-center gap-2">
           <p className="flex-1 text-center text-sm text-muted-foreground">
             {statusMessage || "상태 메시지가 없습니다."}
@@ -84,6 +82,8 @@ function ProfileImageSection({
             </Button>
           )}
         </div>
+
+        {children}
       </CardContent>
     </Card>
   );
