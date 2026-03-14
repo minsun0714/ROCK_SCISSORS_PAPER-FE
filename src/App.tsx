@@ -34,7 +34,7 @@ function App() {
             <Outlet />
           </ApiQueryBoundary>
         </BattleRequestProvider>
-        <Toaster position="bottom-right" richColors />
+        <Toaster position="top-right" richColors />
       </LoginModalProvider>
     </PresenceProvider>
   );
