@@ -18,11 +18,7 @@ function Callback() {
     mutate(code);
   }, [code, mutate]);
 
-  return (
-    <main className="flex min-h-[calc(100vh-72px)] items-center justify-center px-4">
-      <h1 className="text-xl font-semibold text-slate-700">{code}</h1>
-    </main>
-  );
+  return <main className="flex min-h-[calc(100vh-72px)] items-center justify-center px-4"></main>;
 }
 
 export default Callback;
