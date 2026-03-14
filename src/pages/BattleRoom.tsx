@@ -1,4 +1,4 @@
-import { Copy, X } from "lucide-react";
+import { Copy, Home, X } from "lucide-react";
 import { toast } from "sonner";
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
@@ -231,19 +231,28 @@ function BattleRoom() {
             )}
 
             <div className="flex flex-wrap justify-center gap-2">
-              <Button variant="outline" size="sm" onClick={handleCopyRoomLink} className="gap-1.5">
-                <Copy className="h-3.5 w-3.5" />
-                방 링크 복사
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCancelBattle}
-                className="gap-1.5 text-destructive hover:bg-destructive/10"
-              >
-                <X className="h-3.5 w-3.5" />
-                대전 취소
-              </Button>
+              {phase === "closed" || phase === "disconnected" ? (
+                <Button size="sm" onClick={() => navigate("/")} className="gap-1.5">
+                  <Home className="h-3.5 w-3.5" />
+                  홈으로 돌아가기
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" size="sm" onClick={handleCopyRoomLink} className="gap-1.5">
+                    <Copy className="h-3.5 w-3.5" />
+                    방 링크 복사
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleCancelBattle}
+                    className="gap-1.5 text-destructive hover:bg-destructive/10"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                    대전 취소
+                  </Button>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
