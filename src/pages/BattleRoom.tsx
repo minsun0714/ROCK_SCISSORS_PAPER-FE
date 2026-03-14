@@ -6,7 +6,6 @@ import BattleGameSection from "@/features/battle/components/BattleGameSection";
 import BattleHeroSection from "@/features/battle/components/BattleHeroSection";
 import BattleLobbyHeader from "@/features/battle/components/BattleLobbyHeader";
 import BattleProgressBar from "@/features/battle/components/BattleProgressBar";
-import { useCancelBattleRequestMutation } from "@/features/battle/hooks/useCancelBattleRequestMutation";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
 import { cancelBattleRequestOnExit } from "@/service/battleService";
@@ -38,7 +37,6 @@ function BattleRoom() {
   const requestId = routeState?.requestId;
   const opponent = routeState?.opponent;
   const steps = role === "invitee" ? joinedSteps : waitingSteps;
-  const { mutate: cancelBattleRequest } = useCancelBattleRequestMutation();
   const { isBattleRejected } = useBattleRequest();
   const rejected = requestId != null && isBattleRejected(requestId);
 
@@ -184,9 +182,9 @@ function BattleRoom() {
   };
 
   const handleCancelBattle = () => {
-    if (isLobby && requestId != null && role === "creator" && !rejected) {
-      cancelBattleRequest(requestId);
-    }
+    // Don't call cancelBattleRequest here — navigating away unmounts the component,
+    // which closes the WebSocket, and the backend's onClose handler deletes the room.
+    // Calling both causes duplicate deletes (ObjectOptimisticLockingFailureException).
     shouldCancelOnLeaveRef.current = false;
     navigate("/");
   };
