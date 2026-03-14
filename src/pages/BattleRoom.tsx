@@ -48,7 +48,7 @@ function BattleRoom() {
   const isLobby = phase === "connecting" || phase === "lobby";
 
   const shouldCancelOnLeaveRef = useRef(false);
-  shouldCancelOnLeaveRef.current = isLobby && role === "creator" && requestId != null;
+  shouldCancelOnLeaveRef.current = isLobby && role === "creator" && requestId != null && !rejected;
   const tokenRef = useRef(localStorage.getItem("accessToken"));
 
   useEffect(() => {
@@ -184,7 +184,7 @@ function BattleRoom() {
   };
 
   const handleCancelBattle = () => {
-    if (isLobby && requestId != null && role === "creator") {
+    if (isLobby && requestId != null && role === "creator" && !rejected) {
       cancelBattleRequest(requestId);
     }
     navigate("/");
