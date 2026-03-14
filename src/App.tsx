@@ -1,6 +1,7 @@
 import { Toaster } from "sonner";
 import { Outlet } from "react-router-dom";
 import { LoginModalProvider } from "@/features/auth/LoginModalContext";
+import { BattleRequestProvider } from "@/features/notification/BattleRequestContext";
 import { useNotifications } from "@/features/notification/hooks";
 import PresenceProvider from "@/features/presence/PresenceProvider";
 import { useHeartbeat, useMyProfileQuery } from "@/features/user/hooks";
@@ -28,9 +29,11 @@ function App() {
           onClearNotifications={clearAll}
           profileImageUrl={myProfile?.profileImageUrl}
         />
-        <ApiQueryBoundary>
-          <Outlet />
-        </ApiQueryBoundary>
+        <BattleRequestProvider notifications={notifications} onDismiss={dismissNotification}>
+          <ApiQueryBoundary>
+            <Outlet />
+          </ApiQueryBoundary>
+        </BattleRequestProvider>
         <Toaster position="bottom-right" richColors />
       </LoginModalProvider>
     </PresenceProvider>
