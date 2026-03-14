@@ -28,7 +28,7 @@ function Header({
 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-10 border-b bg-background shadow-sm">
-      <div className="mx-auto flex w-full max-w-xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex w-full max-w-3xl items-center justify-between px-4 py-3">
         <Link to="/" className="font-display text-xl tracking-tight text-primary no-underline">
           RSP
         </Link>

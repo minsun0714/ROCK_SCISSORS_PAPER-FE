@@ -35,7 +35,7 @@ function UserPage() {
 
   if (isPending) {
     return (
-      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-xl flex-col items-center justify-center px-4 py-10">
+      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-3xl flex-col items-center justify-center px-4 py-10">
         <p className="text-sm text-muted-foreground">프로필을 불러오는 중...</p>
       </main>
     );
@@ -43,14 +43,14 @@ function UserPage() {
 
   if (isError) {
     return (
-      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-xl flex-col items-center justify-center px-4 py-10">
+      <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-3xl flex-col items-center justify-center px-4 py-10">
         <p className="text-sm text-destructive">프로필을 불러오지 못했습니다.</p>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-xl flex-col items-center gap-5 px-4 py-10">
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-3xl flex-col items-center gap-5 px-4 py-10">
       <h1 className="font-display text-3xl tracking-tight text-primary">{nickname ?? "프로필"}</h1>
 
       <ProfileImageSection

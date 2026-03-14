@@ -12,7 +12,7 @@ function RouteErrorBoundary() {
       : "잠시 후 다시 시도해 주세요.";
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-xl flex-col items-center justify-center gap-3 px-4 py-10 text-center">
+    <main className="mx-auto flex min-h-[calc(100vh-56px)] w-full max-w-3xl flex-col items-center justify-center gap-3 px-4 py-10 text-center">
       <p className="text-xs font-medium text-muted-foreground">{status}</p>
       <h1 className="text-lg font-semibold text-foreground">{title}</h1>
       <p className="text-sm text-muted-foreground">{message}</p>
