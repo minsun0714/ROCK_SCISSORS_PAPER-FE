@@ -1,6 +1,6 @@
 import { Copy, Home, X } from "lucide-react";
 import { toast } from "sonner";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import BattleGameSection from "@/features/battle/components/BattleGameSection";
 import BattleHeroSection from "@/features/battle/components/BattleHeroSection";
@@ -9,6 +9,7 @@ import BattleProgressBar from "@/features/battle/components/BattleProgressBar";
 import { useCancelBattleRequestMutation } from "@/features/battle/hooks/useCancelBattleRequestMutation";
 import { useBattleWebSocket } from "@/features/battle/hooks/useBattleWebSocket";
 import type { BattleRouteState } from "@/features/battle/types";
+import { cancelBattleRequestOnExit } from "@/service/battleService";
 import { useBattleRequest } from "@/features/notification/BattleRequestContext";
 import { useMyProfileQuery } from "@/features/user/hooks";
 import { Button } from "@/shared/components/ui/button";
@@ -45,6 +46,25 @@ function BattleRoom() {
     useBattleWebSocket(battleId, myProfile?.userId ?? undefined);
 
   const isLobby = phase === "connecting" || phase === "lobby";
+
+  const shouldCancelOnLeaveRef = useRef(false);
+  shouldCancelOnLeaveRef.current = isLobby && role === "creator" && requestId != null;
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      if (shouldCancelOnLeaveRef.current && requestId != null) {
+        cancelBattleRequestOnExit(requestId);
+      }
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      if (shouldCancelOnLeaveRef.current && requestId != null) {
+        cancelBattleRequestOnExit(requestId);
+      }
+    };
+  }, [requestId]);
 
   const opponentName = opponent?.nickname ?? "상대방";
   const pageTitle = isLobby
