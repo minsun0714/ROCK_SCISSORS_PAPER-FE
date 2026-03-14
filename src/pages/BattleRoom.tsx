@@ -156,7 +156,7 @@ function BattleRoom() {
   };
 
   const handleCancelBattle = () => {
-    if (requestId != null) {
+    if (requestId != null && role === "creator") {
       cancelBattleRequest(requestId);
     }
     navigate("/");
