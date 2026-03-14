@@ -98,7 +98,7 @@ export const useBattleWebSocket = (roomId?: string, myUserId?: number) => {
             roundNumber: d.roundNumber as number | undefined,
           });
         } else if (type === "ROOM_CLOSED") {
-          setClosedMessage((msg.data as string) ?? "대전이 종료되었습니다.");
+          setClosedMessage(typeof msg.data === "string" ? msg.data : "대전이 종료되었습니다.");
           setPhase("closed");
         }
       } catch {
